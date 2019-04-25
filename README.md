@@ -1,5 +1,5 @@
 [@zokugun/lang.date](https://github.com/ZokugunKS/lang.date)
-==========================================================================
+============================================================
 
 [![kaoscript](https://img.shields.io/badge/language-kaoscript-orange.svg)](https://github.com/kaoscript/kaoscript)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)

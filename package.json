@@ -10,7 +10,7 @@
 	"homepage": "https://github.com/zokugunks/lang.date",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/zokugunks/lang.date.git"
+		"url": "https://github.com/zokugunks/lang.date"
 	},
 	"bugs": {
 		"url": "https://github.com/zokugunks/lang.date/issues"
