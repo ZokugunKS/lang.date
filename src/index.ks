@@ -83,7 +83,7 @@ impl Date {
 		yesterday(utc: Boolean = false): Date => new Date().midnight(utc).add('day', -1)
 	}
 	add(properties: Object): Date { // {{{
-		for const name of properties {
+		for const :name of properties {
 			if name[0] == 'd' && (name == 'd' || name == 'day' || name == 'days') {
 				this.setDate(this.getDate() + properties[name]:NS.toInt())
 			}
@@ -717,7 +717,7 @@ impl Date {
 		return this
 	} // }}}
 	rewind(properties: Object): Date { // {{{
-		for const name of properties {
+		for const :name of properties {
 			if name[0] == 'd' && (name == 'd' || name == 'day' || name == 'days') {
 				this.setDate(this.getDate() - properties[name]:NS.toInt())
 			}
@@ -780,7 +780,7 @@ impl Date {
 	} // }}}
 	set(properties: Object, utc: Boolean = false): Date { // {{{
 		if utc {
-			for const name of properties {
+			for const :name of properties {
 				if name[0] == 'd' {
 					if name == 'dm' || name == 'dayofmonth' {
 						this.setUTCDayOfMonth(properties[name]:NS.toInt())
@@ -818,7 +818,7 @@ impl Date {
 			}
 		}
 		else {
-			for const name of properties {
+			for const :name of properties {
 				if name[0] == 'd' {
 					if name == 'dm' || name == 'dayofmonth' {
 						this.setDayOfMonth(properties[name]:NS.toInt())
