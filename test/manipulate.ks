@@ -1,4 +1,5 @@
 #![bin]
+#![error(off)]
 
 extern {
 	describe:	func
@@ -127,7 +128,7 @@ describe('manipulate', func() {
 		expect(d.add('millisecond', -1).getMilliseconds()).to.equal(r.getMilliseconds())
 	}) // }}}
 
-	it('add object', func() { // {{{
+	it('add dictionary', func() { // {{{
 		const r = new Date()
 		r.setMonth(r.getMonth() + 1)
 		r.setDate(r.getDate() - 3)
@@ -153,7 +154,7 @@ describe('manipulate', func() {
 		expect(d.getMonth()).to.equal(r.getMonth())
 	}) // }}}
 
-	it('rewind object', func() { // {{{
+	it('rewind dictionary', func() { // {{{
 		const r = new Date()
 		r.setMonth(r.getMonth() - 1)
 		r.setDate(r.getDate() + 3)
@@ -176,7 +177,7 @@ describe('manipulate', func() {
 		expect(d.getMonth()).to.equal(2)
 	}) // }}}
 
-	it('set object', func() { // {{{
+	it('set dictionary', func() { // {{{
 		const d = new Date().set({
 			month: 5,
 			dm: 12,

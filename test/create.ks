@@ -134,12 +134,4 @@ describe('create', func() {
 		expect(d.getUTCSeconds()).to.equal(0)
 		expect(d.getUTCMilliseconds()).to.equal(0)
 	}) // }}}
-
-	it('clone', func() { // {{{
-		const r = new Date()
-		const d = r.clone()
-
-		expect(r).to.not.equal(d)
-		expect(r.getTime()).to.equal(d.getTime())
-	}) // }}}
 })
