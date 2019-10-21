@@ -345,8 +345,6 @@ impl Date {
 
 		return this
 	} // }}}
-	equals(value: Date): Boolean => this.getTime() == value.getTime()
-	equals(value): Boolean => false
 	future(value: String, utc: Boolean = false): Date { // {{{
 		value = value.toLowerCase()
 

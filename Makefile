@@ -13,6 +13,6 @@ else
 endif
 
 clean:
-	npx kaoscript --clean
+	node_modules/.bin/kaoscript --clean
 
 .PHONY: test coverage
