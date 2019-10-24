@@ -1,4 +1,4 @@
-import '@zokugun/lang'
+require|import '@zokugun/lang'
 
 const $months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 const $days = {
