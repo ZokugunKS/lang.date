@@ -14,16 +14,16 @@ import {
 describe('manipulate', func() {
 	it('add year +1', func() { // {{{
 		const r = new Date()
-		r.setFullYear(r.getFullYear() + 1)
+		r.setYear(r.getYear() + 1)
 
-		expect(new Date().add('year', 1).getFullYear()).to.equal(r.getFullYear())
+		expect(new Date().add('year', 1).getYear()).to.equal(r.getYear())
 	}) // }}}
 
 	it('add year -1', func() { // {{{
 		const r = new Date()
-		r.setFullYear(r.getFullYear() - 1)
+		r.setYear(r.getYear() - 1)
 
-		expect(new Date().add('year', -1).getFullYear()).to.equal(r.getFullYear())
+		expect(new Date().add('year', -1).getYear()).to.equal(r.getYear())
 	}) // }}}
 
 	it('add month +1', func() { // {{{
@@ -42,30 +42,30 @@ describe('manipulate', func() {
 
 	it('add week +1', func() { // {{{
 		const r = new Date()
-		r.setDate(r.getDate() + 7)
+		r.setDay(r.getDay() + 7)
 
-		expect(new Date().add('week', 1).getDate()).to.equal(r.getDate())
+		expect(new Date().add('week', 1).getDay()).to.equal(r.getDay())
 	}) // }}}
 
 	it('add week -1', func() { // {{{
 		const r = new Date()
-		r.setDate(r.getDate() - 7)
+		r.setDay(r.getDay() - 7)
 
-		expect(new Date().add('week', -1).getDate()).to.equal(r.getDate())
+		expect(new Date().add('week', -1).getDay()).to.equal(r.getDay())
 	}) // }}}
 
 	it('add day +1', func() { // {{{
 		const r = new Date()
-		r.setDate(r.getDate() + 1)
+		r.setDay(r.getDay() + 1)
 
-		expect(new Date().add('day', 1).getDate()).to.equal(r.getDate())
+		expect(new Date().add('day', 1).getDay()).to.equal(r.getDay())
 	}) // }}}
 
 	it('add day -1', func() { // {{{
 		const r = new Date()
-		r.setDate(r.getDate() - 1)
+		r.setDay(r.getDay() - 1)
 
-		expect(new Date().add('day', -1).getDate()).to.equal(r.getDate())
+		expect(new Date().add('day', -1).getDay()).to.equal(r.getDay())
 	}) // }}}
 
 	it('add hour +1', func() { // {{{
@@ -131,7 +131,7 @@ describe('manipulate', func() {
 	it('add dictionary', func() { // {{{
 		const r = new Date()
 		r.setMonth(r.getMonth() + 1)
-		r.setDate(r.getDate() - 3)
+		r.setDay(r.getDay() - 3)
 		r.setHours(r.getHours() + 6)
 
 		const d = new Date().add({
@@ -141,7 +141,7 @@ describe('manipulate', func() {
 		})
 
 		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDate()).to.equal(r.getDate())
+		expect(d.getDay()).to.equal(r.getDay())
 		expect(d.getHours()).to.equal(r.getHours())
 	}) // }}}
 
@@ -157,7 +157,7 @@ describe('manipulate', func() {
 	it('rewind dictionary', func() { // {{{
 		const r = new Date()
 		r.setMonth(r.getMonth() - 1)
-		r.setDate(r.getDate() + 3)
+		r.setDay(r.getDay() + 3)
 		r.setHours(r.getHours() - 6)
 
 		const d = new Date().rewind({
@@ -167,44 +167,35 @@ describe('manipulate', func() {
 		})
 
 		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDate()).to.equal(r.getDate())
+		expect(d.getDay()).to.equal(r.getDay())
 		expect(d.getHours()).to.equal(r.getHours())
 	}) // }}}
 
 	it('set month', func() { // {{{
-		const d = new Date().set('month', 2)
+		const d = new Date().set('month', 3)
 
-		expect(d.getMonth()).to.equal(2)
+		expect(d.getMonth()).to.equal(3)
 	}) // }}}
 
 	it('set dictionary', func() { // {{{
 		const d = new Date().set({
 			month: 5,
-			dm: 12,
+			day: 12,
 			hours: 6
 		})
 
 		expect(d.getMonth()).to.equal(5)
-		expect(d.getDate()).to.equal(12)
+		expect(d.getDay()).to.equal(12)
 		expect(d.getHours()).to.equal(6)
 	}) // }}}
 
-	it('midnight local', func() { // {{{
+	it('midnight', func() { // {{{
 		const d = new Date().midnight()
 
 		expect(d.getHours()).to.equal(0)
 		expect(d.getMinutes()).to.equal(0)
 		expect(d.getSeconds()).to.equal(0)
 		expect(d.getMilliseconds()).to.equal(0)
-	}) // }}}
-
-	it('midnight utc', func() { // {{{
-		const d = new Date().midnight(true)
-
-		expect(d.getUTCHours()).to.equal(0)
-		expect(d.getUTCMinutes()).to.equal(0)
-		expect(d.getUTCSeconds()).to.equal(0)
-		expect(d.getUTCMilliseconds()).to.equal(0)
 	}) // }}}
 
 	it('noon local', func() { // {{{
@@ -216,532 +207,298 @@ describe('manipulate', func() {
 		expect(d.getMilliseconds()).to.equal(0)
 	}) // }}}
 
-	it('noon utc', func() { // {{{
-		const d = new Date().noon(true)
-
-		expect(d.getUTCHours()).to.equal(12)
-		expect(d.getUTCMinutes()).to.equal(0)
-		expect(d.getUTCSeconds()).to.equal(0)
-		expect(d.getUTCMilliseconds()).to.equal(0)
-	}) // }}}
-
-	it('startOf year local', func() { // {{{
+	it('startOf year', func() { // {{{
 		const r = new Date()
 
 		const d = new Date().startOf('year')
 
-		expect(d.getFullYear()).to.equal(r.getFullYear())
-		expect(d.getMonth()).to.equal(0)
-		expect(d.getDate()).to.equal(1)
+		expect(d.getYear()).to.equal(r.getYear())
+		expect(d.getMonth()).to.equal(1)
+		expect(d.getDay()).to.equal(1)
 		expect(d.getHours()).to.equal(0)
 		expect(d.getMinutes()).to.equal(0)
 		expect(d.getSeconds()).to.equal(0)
 		expect(d.getMilliseconds()).to.equal(0)
 	}) // }}}
 
-	it('startOf year utc', func() { // {{{
-		const r = new Date()
-
-		const d = new Date().startOf('year', true)
-
-		expect(d.getUTCFullYear()).to.equal(r.getUTCFullYear())
-		expect(d.getUTCMonth()).to.equal(0)
-		expect(d.getUTCDate()).to.equal(1)
-		expect(d.getUTCHours()).to.equal(0)
-		expect(d.getUTCMinutes()).to.equal(0)
-		expect(d.getUTCSeconds()).to.equal(0)
-		expect(d.getUTCMilliseconds()).to.equal(0)
-	}) // }}}
-
-	it('startOf month local', func() { // {{{
+	it('startOf month', func() { // {{{
 		const r = new Date()
 
 		const d = new Date().startOf('month')
 
-		expect(d.getFullYear()).to.equal(r.getFullYear())
+		expect(d.getYear()).to.equal(r.getYear())
 		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDate()).to.equal(1)
+		expect(d.getDay()).to.equal(1)
 		expect(d.getHours()).to.equal(0)
 		expect(d.getMinutes()).to.equal(0)
 		expect(d.getSeconds()).to.equal(0)
 		expect(d.getMilliseconds()).to.equal(0)
 	}) // }}}
 
-	it('startOf month utc', func() { // {{{
-		const r = new Date()
-
-		const d = new Date().startOf('month', true)
-
-		expect(d.getUTCFullYear()).to.equal(r.getUTCFullYear())
-		expect(d.getUTCMonth()).to.equal(r.getUTCMonth())
-		expect(d.getUTCDate()).to.equal(1)
-		expect(d.getUTCHours()).to.equal(0)
-		expect(d.getUTCMinutes()).to.equal(0)
-		expect(d.getUTCSeconds()).to.equal(0)
-		expect(d.getUTCMilliseconds()).to.equal(0)
-	}) // }}}
-
-	it('startOf day local', func() { // {{{
+	it('startOf day', func() { // {{{
 		const r = new Date()
 
 		const d = new Date().startOf('day')
 
-		expect(d.getFullYear()).to.equal(r.getFullYear())
+		expect(d.getYear()).to.equal(r.getYear())
 		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDate()).to.equal(r.getDate())
+		expect(d.getDay()).to.equal(r.getDay())
 		expect(d.getHours()).to.equal(0)
 		expect(d.getMinutes()).to.equal(0)
 		expect(d.getSeconds()).to.equal(0)
 		expect(d.getMilliseconds()).to.equal(0)
 	}) // }}}
 
-	it('startOf day utc', func() { // {{{
-		const r = new Date()
-
-		const d = new Date().startOf('day', true)
-
-		expect(d.getUTCFullYear()).to.equal(r.getUTCFullYear())
-		expect(d.getUTCMonth()).to.equal(r.getUTCMonth())
-		expect(d.getUTCDate()).to.equal(r.getUTCDate())
-		expect(d.getUTCHours()).to.equal(0)
-		expect(d.getUTCMinutes()).to.equal(0)
-		expect(d.getUTCSeconds()).to.equal(0)
-		expect(d.getUTCMilliseconds()).to.equal(0)
-	}) // }}}
-
-	it('startOf hour local', func() { // {{{
+	it('startOf hour', func() { // {{{
 		const r = new Date()
 
 		const d = new Date().startOf('hour')
 
-		expect(d.getFullYear()).to.equal(r.getFullYear())
+		expect(d.getYear()).to.equal(r.getYear())
 		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDate()).to.equal(r.getDate())
+		expect(d.getDay()).to.equal(r.getDay())
 		expect(d.getHours()).to.equal(r.getHours())
 		expect(d.getMinutes()).to.equal(0)
 		expect(d.getSeconds()).to.equal(0)
 		expect(d.getMilliseconds()).to.equal(0)
 	}) // }}}
 
-	it('startOf hour utc', func() { // {{{
-		const r = new Date()
-
-		const d = new Date().startOf('hour', true)
-
-		expect(d.getUTCFullYear()).to.equal(r.getUTCFullYear())
-		expect(d.getUTCMonth()).to.equal(r.getUTCMonth())
-		expect(d.getUTCDate()).to.equal(r.getUTCDate())
-		expect(d.getUTCHours()).to.equal(r.getUTCHours())
-		expect(d.getUTCMinutes()).to.equal(0)
-		expect(d.getUTCSeconds()).to.equal(0)
-		expect(d.getUTCMilliseconds()).to.equal(0)
-	}) // }}}
-
-	it('startOf minute local', func() { // {{{
+	it('startOf minute', func() { // {{{
 		const r = new Date()
 
 		const d = new Date().startOf('minute')
 
-		expect(d.getFullYear()).to.equal(r.getFullYear())
+		expect(d.getYear()).to.equal(r.getYear())
 		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDate()).to.equal(r.getDate())
+		expect(d.getDay()).to.equal(r.getDay())
 		expect(d.getHours()).to.equal(r.getHours())
 		expect(d.getMinutes()).to.equal(r.getMinutes())
 		expect(d.getSeconds()).to.equal(0)
 		expect(d.getMilliseconds()).to.equal(0)
 	}) // }}}
 
-	it('startOf minute utc', func() { // {{{
-		const r = new Date()
-
-		const d = new Date().startOf('minute', true)
-
-		expect(d.getUTCFullYear()).to.equal(r.getUTCFullYear())
-		expect(d.getUTCMonth()).to.equal(r.getUTCMonth())
-		expect(d.getUTCDate()).to.equal(r.getUTCDate())
-		expect(d.getUTCHours()).to.equal(r.getUTCHours())
-		expect(d.getUTCMinutes()).to.equal(r.getUTCMinutes())
-		expect(d.getUTCSeconds()).to.equal(0)
-		expect(d.getUTCMilliseconds()).to.equal(0)
-	}) // }}}
-
-	it('startOf second local', func() { // {{{
+	it('startOf second', func() { // {{{
 		const r = new Date()
 
 		const d = new Date().startOf('second')
 
-		expect(d.getFullYear()).to.equal(r.getFullYear())
+		expect(d.getYear()).to.equal(r.getYear())
 		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDate()).to.equal(r.getDate())
+		expect(d.getDay()).to.equal(r.getDay())
 		expect(d.getHours()).to.equal(r.getHours())
 		expect(d.getMinutes()).to.equal(r.getMinutes())
 		expect(d.getSeconds()).to.equal(r.getSeconds())
 		expect(d.getMilliseconds()).to.equal(0)
 	}) // }}}
 
-	it('startOf second utc', func() { // {{{
-		const r = new Date()
-
-		const d = new Date().startOf('second', true)
-
-		expect(d.getUTCFullYear()).to.equal(r.getUTCFullYear())
-		expect(d.getUTCMonth()).to.equal(r.getUTCMonth())
-		expect(d.getUTCDate()).to.equal(r.getUTCDate())
-		expect(d.getUTCHours()).to.equal(r.getUTCHours())
-		expect(d.getUTCMinutes()).to.equal(r.getUTCMinutes())
-		expect(d.getUTCSeconds()).to.equal(r.getUTCSeconds())
-		expect(d.getUTCMilliseconds()).to.equal(0)
-	}) // }}}
-
-	it('endOf year local', func() { // {{{
+	it('endOf year', func() { // {{{
 		const r = new Date()
 
 		const d = new Date().endOf('year')
 
-		expect(d.getFullYear()).to.equal(r.getFullYear())
-		expect(d.getMonth()).to.equal(11)
-		expect(d.getDate()).to.equal(31)
+		expect(d.getYear()).to.equal(r.getYear())
+		expect(d.getMonth()).to.equal(12)
+		expect(d.getDay()).to.equal(31)
 		expect(d.getHours()).to.equal(23)
 		expect(d.getMinutes()).to.equal(59)
 		expect(d.getSeconds()).to.equal(59)
 		expect(d.getMilliseconds()).to.equal(999)
 	}) // }}}
 
-	it('endOf year utc', func() { // {{{
-		const r = new Date()
-
-		const d = new Date().endOf('year', true)
-
-		expect(d.getUTCFullYear()).to.equal(r.getUTCFullYear())
-		expect(d.getUTCMonth()).to.equal(11)
-		expect(d.getUTCDate()).to.equal(31)
-		expect(d.getUTCHours()).to.equal(23)
-		expect(d.getUTCMinutes()).to.equal(59)
-		expect(d.getUTCSeconds()).to.equal(59)
-		expect(d.getUTCMilliseconds()).to.equal(999)
-	}) // }}}
-
-	it('endOf month local', func() { // {{{
+	it('endOf month', func() { // {{{
 		const r = new Date()
 
 		const d = new Date().endOf('month')
 
-		expect(d.getFullYear()).to.equal(r.getFullYear())
+		expect(d.getYear()).to.equal(r.getYear())
 		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDate()).to.equal(r.getDaysInMonth())
+		expect(d.getDay()).to.equal(r.getDaysInMonth())
 		expect(d.getHours()).to.equal(23)
 		expect(d.getMinutes()).to.equal(59)
 		expect(d.getSeconds()).to.equal(59)
 		expect(d.getMilliseconds()).to.equal(999)
 	}) // }}}
 
-	it('endOf month utc', func() { // {{{
-		const r = new Date()
-
-		const d = new Date().endOf('month', true)
-
-		expect(d.getUTCFullYear()).to.equal(r.getUTCFullYear())
-		expect(d.getUTCMonth()).to.equal(r.getUTCMonth())
-		expect(d.getUTCDate()).to.equal(r.getDaysInMonth(true))
-		expect(d.getUTCHours()).to.equal(23)
-		expect(d.getUTCMinutes()).to.equal(59)
-		expect(d.getUTCSeconds()).to.equal(59)
-		expect(d.getUTCMilliseconds()).to.equal(999)
-	}) // }}}
-
-	it('endOf day local', func() { // {{{
+	it('endOf day', func() { // {{{
 		const r = new Date()
 
 		const d = new Date().endOf('day')
 
-		expect(d.getFullYear()).to.equal(r.getFullYear())
+		expect(d.getYear()).to.equal(r.getYear())
 		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDate()).to.equal(r.getDate())
+		expect(d.getDay()).to.equal(r.getDay())
 		expect(d.getHours()).to.equal(23)
 		expect(d.getMinutes()).to.equal(59)
 		expect(d.getSeconds()).to.equal(59)
 		expect(d.getMilliseconds()).to.equal(999)
 	}) // }}}
 
-	it('endOf day utc', func() { // {{{
-		const r = new Date()
-
-		const d = new Date().endOf('day', true)
-
-		expect(d.getUTCFullYear()).to.equal(r.getUTCFullYear())
-		expect(d.getUTCMonth()).to.equal(r.getUTCMonth())
-		expect(d.getUTCDate()).to.equal(r.getUTCDate())
-		expect(d.getUTCHours()).to.equal(23)
-		expect(d.getUTCMinutes()).to.equal(59)
-		expect(d.getUTCSeconds()).to.equal(59)
-		expect(d.getUTCMilliseconds()).to.equal(999)
-	}) // }}}
-
-	it('endOf hour local', func() { // {{{
+	it('endOf hour', func() { // {{{
 		const r = new Date()
 
 		const d = new Date().endOf('hour')
 
-		expect(d.getFullYear()).to.equal(r.getFullYear())
+		expect(d.getYear()).to.equal(r.getYear())
 		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDate()).to.equal(r.getDate())
+		expect(d.getDay()).to.equal(r.getDay())
 		expect(d.getHours()).to.equal(r.getHours())
 		expect(d.getMinutes()).to.equal(59)
 		expect(d.getSeconds()).to.equal(59)
 		expect(d.getMilliseconds()).to.equal(999)
 	}) // }}}
 
-	it('endOf hour utc', func() { // {{{
-		const r = new Date()
-
-		const d = new Date().endOf('hour', true)
-
-		expect(d.getUTCFullYear()).to.equal(r.getUTCFullYear())
-		expect(d.getUTCMonth()).to.equal(r.getUTCMonth())
-		expect(d.getUTCDate()).to.equal(r.getUTCDate())
-		expect(d.getUTCHours()).to.equal(r.getUTCHours())
-		expect(d.getUTCMinutes()).to.equal(59)
-		expect(d.getUTCSeconds()).to.equal(59)
-		expect(d.getUTCMilliseconds()).to.equal(999)
-	}) // }}}
-
-	it('endOf minute local', func() { // {{{
+	it('endOf minute', func() { // {{{
 		const r = new Date()
 
 		const d = new Date().endOf('minute')
 
-		expect(d.getFullYear()).to.equal(r.getFullYear())
+		expect(d.getYear()).to.equal(r.getYear())
 		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDate()).to.equal(r.getDate())
+		expect(d.getDay()).to.equal(r.getDay())
 		expect(d.getHours()).to.equal(r.getHours())
 		expect(d.getMinutes()).to.equal(r.getMinutes())
 		expect(d.getSeconds()).to.equal(59)
 		expect(d.getMilliseconds()).to.equal(999)
 	}) // }}}
 
-	it('endOf minute utc', func() { // {{{
-		const r = new Date()
-
-		const d = new Date().endOf('minute', true)
-
-		expect(d.getUTCFullYear()).to.equal(r.getUTCFullYear())
-		expect(d.getUTCMonth()).to.equal(r.getUTCMonth())
-		expect(d.getUTCDate()).to.equal(r.getUTCDate())
-		expect(d.getUTCHours()).to.equal(r.getUTCHours())
-		expect(d.getUTCMinutes()).to.equal(r.getUTCMinutes())
-		expect(d.getUTCSeconds()).to.equal(59)
-		expect(d.getUTCMilliseconds()).to.equal(999)
-	}) // }}}
-
-	it('endOf second local', func() { // {{{
+	it('endOf second', func() { // {{{
 		const r = new Date()
 
 		const d = new Date().endOf('second')
 
-		expect(d.getFullYear()).to.equal(r.getFullYear())
+		expect(d.getYear()).to.equal(r.getYear())
 		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDate()).to.equal(r.getDate())
+		expect(d.getDay()).to.equal(r.getDay())
 		expect(d.getHours()).to.equal(r.getHours())
 		expect(d.getMinutes()).to.equal(r.getMinutes())
 		expect(d.getSeconds()).to.equal(r.getSeconds())
 		expect(d.getMilliseconds()).to.equal(999)
 	}) // }}}
 
-	it('endOf second utc', func() { // {{{
-		const r = new Date()
-
-		const d = new Date().endOf('second', true)
-
-		expect(d.getUTCFullYear()).to.equal(r.getUTCFullYear())
-		expect(d.getUTCMonth()).to.equal(r.getUTCMonth())
-		expect(d.getUTCDate()).to.equal(r.getUTCDate())
-		expect(d.getUTCHours()).to.equal(r.getUTCHours())
-		expect(d.getUTCMinutes()).to.equal(r.getUTCMinutes())
-		expect(d.getUTCSeconds()).to.equal(r.getUTCSeconds())
-		expect(d.getUTCMilliseconds()).to.equal(999)
-	}) // }}}
-
 	it('getDayOfYear 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 0, 1)
+		const d = Date.create(2000, 1, 1)
 
 		expect(d.getDayOfYear()).to.equal(1)
 	}) // }}}
 
-	it('getUTCDayOfYear 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 0, 1, true)
-
-		expect(d.getUTCDayOfYear()).to.equal(1)
-	}) // }}}
-
 	it('setDayOfYear', func() { // {{{
-		const d = Date.create(2000, 0, 1).setDayOfYear(66)
+		const d = Date.create(2000, 1, 1).setDayOfYear(66)
 
 		expect(d.getMonth()).to.equal(2)
 		expect(d.getDayOfMonth()).to.equal(6)
 	}) // }}}
 
-	it('setUTCDayOfYear', func() { // {{{
-		const d = Date.create(2000, 0, 1, true).setUTCDayOfYear(66)
+	it('future 2000-1-1 saturday', func() { // {{{
+		const d = Date.create(2000, 1, 1).future('saturday')
 
-		expect(d.getUTCMonth()).to.equal(2)
-		expect(d.getUTCDayOfMonth()).to.equal(6)
-	}) // }}}
-
-	it('future local 2000-1-1 saturday', func() { // {{{
-		const d = Date.create(2000, 0, 1).future('saturday')
-
-		expect(d.getFullYear()).to.equal(2000)
-		expect(d.getMonth()).to.equal(0)
+		expect(d.getYear()).to.equal(2000)
+		expect(d.getMonth()).to.equal(1)
 		expect(d.getDayOfMonth()).to.equal(8)
 	}) // }}}
 
-	it('future local 2000-1-1 sunday', func() { // {{{
-		const d = Date.create(2000, 0, 1).future('sunday')
+	it('future 2000-1-1 sunday', func() { // {{{
+		const d = Date.create(2000, 1, 1).future('sunday')
 
-		expect(d.getFullYear()).to.equal(2000)
-		expect(d.getMonth()).to.equal(0)
+		expect(d.getYear()).to.equal(2000)
+		expect(d.getMonth()).to.equal(1)
 		expect(d.getDayOfMonth()).to.equal(2)
 	}) // }}}
 
-	it('future local 2000-1-3 saturday', func() { // {{{
-		const d = Date.create(2000, 0, 3).future('saturday')
+	it('future 2000-1-3 saturday', func() { // {{{
+		const d = Date.create(2000, 1, 3).future('saturday')
 
-		expect(d.getFullYear()).to.equal(2000)
-		expect(d.getMonth()).to.equal(0)
+		expect(d.getYear()).to.equal(2000)
+		expect(d.getMonth()).to.equal(1)
 		expect(d.getDayOfMonth()).to.equal(8)
 	}) // }}}
 
-	it('future local 2000-1-3 sunday', func() { // {{{
-		const d = Date.create(2000, 0, 3).future('sunday')
+	it('future 2000-1-3 sunday', func() { // {{{
+		const d = Date.create(2000, 1, 3).future('sunday')
 
-		expect(d.getFullYear()).to.equal(2000)
-		expect(d.getMonth()).to.equal(0)
+		expect(d.getYear()).to.equal(2000)
+		expect(d.getMonth()).to.equal(1)
 		expect(d.getDayOfMonth()).to.equal(9)
 	}) // }}}
 
-	it('future utc 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 0, 1, true).future('saturday')
+	it('futureOrPresent 2000-1-1', func() { // {{{
+		const d = Date.create(2000, 1, 1).futureOrPresent('saturday')
 
-		expect(d.getUTCFullYear()).to.equal(2000)
-		expect(d.getUTCMonth()).to.equal(0)
-		expect(d.getUTCDayOfMonth()).to.equal(8)
-	}) // }}}
-
-	it('futureOrPresent local 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 0, 1).futureOrPresent('saturday')
-
-		expect(d.getFullYear()).to.equal(2000)
-		expect(d.getMonth()).to.equal(0)
+		expect(d.getYear()).to.equal(2000)
+		expect(d.getMonth()).to.equal(1)
 		expect(d.getDayOfMonth()).to.equal(1)
 	}) // }}}
 
-	it('futureOrPresent utc 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 0, 1, true).futureOrPresent('saturday')
+	it('past 2000-1-1 saturday', func() { // {{{
+		const d = Date.create(2000, 1, 1).past('saturday')
 
-		expect(d.getUTCFullYear()).to.equal(2000)
-		expect(d.getUTCMonth()).to.equal(0)
-		expect(d.getUTCDayOfMonth()).to.equal(1)
-	}) // }}}
-
-	it('past local 2000-1-1 saturday', func() { // {{{
-		const d = Date.create(2000, 0, 1).past('saturday')
-
-		expect(d.getFullYear()).to.equal(1999)
-		expect(d.getMonth()).to.equal(11)
+		expect(d.getYear()).to.equal(1999)
+		expect(d.getMonth()).to.equal(12)
 		expect(d.getDayOfMonth()).to.equal(25)
 	}) // }}}
 
-	it('past local 2000-1-3 saturday', func() { // {{{
-		const d = Date.create(2000, 0, 3).past('saturday')
+	it('past 2000-1-3 saturday', func() { // {{{
+		const d = Date.create(2000, 1, 3).past('saturday')
 
-		expect(d.getFullYear()).to.equal(2000)
-		expect(d.getMonth()).to.equal(0)
+		expect(d.getYear()).to.equal(2000)
+		expect(d.getMonth()).to.equal(1)
 		expect(d.getDayOfMonth()).to.equal(1)
 	}) // }}}
 
-	it('past local 2000-1-3 sunday', func() { // {{{
-		const d = Date.create(2000, 0, 3).past('sunday')
+	it('past 2000-1-3 sunday', func() { // {{{
+		const d = Date.create(2000, 1, 3).past('sunday')
 
-		expect(d.getFullYear()).to.equal(2000)
-		expect(d.getMonth()).to.equal(0)
+		expect(d.getYear()).to.equal(2000)
+		expect(d.getMonth()).to.equal(1)
 		expect(d.getDayOfMonth()).to.equal(2)
 	}) // }}}
 
-	it('past utc 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 0, 1, true).past('saturday')
+	it('pastOrPresent 2000-1-1', func() { // {{{
+		const d = Date.create(2000, 1, 1).pastOrPresent('saturday')
 
-		expect(d.getUTCFullYear()).to.equal(1999)
-		expect(d.getUTCMonth()).to.equal(11)
-		expect(d.getUTCDayOfMonth()).to.equal(25)
-	}) // }}}
-
-	it('pastOrPresent local 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 0, 1).pastOrPresent('saturday')
-
-		expect(d.getFullYear()).to.equal(2000)
-		expect(d.getMonth()).to.equal(0)
+		expect(d.getYear()).to.equal(2000)
+		expect(d.getMonth()).to.equal(1)
 		expect(d.getDayOfMonth()).to.equal(1)
-	}) // }}}
-
-	it('pastOrPresent utc 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 0, 1, true).pastOrPresent('saturday')
-
-		expect(d.getUTCFullYear()).to.equal(2000)
-		expect(d.getUTCMonth()).to.equal(0)
-		expect(d.getUTCDayOfMonth()).to.equal(1)
 	}) // }}}
 
 	it('getDayOfMonth 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 0, 1)
+		const d = Date.create(2000, 1, 1)
 
 		expect(d.getDayOfMonth()).to.equal(1)
 	}) // }}}
 
-	it('getUTCDayOfMonth 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 0, 1, true)
-
-		expect(d.getUTCDayOfMonth()).to.equal(1)
-	}) // }}}
-
 	it('getDaysInMonth 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 0, 1)
+		const d = Date.create(2000, 1, 1)
 
 		expect(d.getDaysInMonth()).to.equal(31)
 	}) // }}}
 
 	it('getDaysInYear 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 0, 1)
+		const d = Date.create(2000, 1, 1)
 
 		expect(d.getDaysInYear()).to.equal(366)
 	}) // }}}
 
 	it('getDaysInYear 2003-1-1', func() { // {{{
-		const d = Date.create(2003, 0, 1)
+		const d = Date.create(2003, 1, 1)
 
 		expect(d.getDaysInYear()).to.equal(365)
 	}) // }}}
 
 	it('getDaysInYear 2002-1-1', func() { // {{{
-		const d = Date.create(2002, 0, 1)
+		const d = Date.create(2002, 1, 1)
 
 		expect(d.getDaysInYear()).to.equal(365)
 	}) // }}}
 
 	it('isLeapYear 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 0, 1)
+		const d = Date.create(2000, 1, 1)
 
 		expect(d.isLeapYear()).to.be.true
 	}) // }}}
 
 	it('setDayOfMonth', func() { // {{{
-		const d = Date.create(2000, 0, 1).setDayOfMonth(15)
+		const d = Date.create(2000, 1, 1).setDayOfMonth(15)
 
 		expect(d.getDayOfMonth()).to.equal(15)
-	}) // }}}
-
-	it('setUTCDayOfMonth', func() { // {{{
-		const d = Date.create(2000, 0, 1, true).setUTCDayOfMonth(15)
-
-		expect(d.getUTCDayOfMonth()).to.equal(15)
 	}) // }}}
 })

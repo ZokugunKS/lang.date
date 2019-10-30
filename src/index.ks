@@ -1,5 +1,7 @@
 require|import '@zokugun/lang'
 
+extern console
+
 const $months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 const $days = {
 	full: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
@@ -9,41 +11,42 @@ const $days = {
 
 type NS = Number | String
 
+disclose Date {
+	constructor()
+	constructor(date: Date)
+	constructor(time: Number)
+	toISOString(): String
+
+	internal {
+		constructor(year: NS, month: NS, day: NS = 1, hours: NS = 0, minutes: NS = 0, seconds: NS = 0, milliseconds: NS = 0)
+		getTime(): Number
+		getTimezoneOffset(): Number
+		getUTCDate(): Number
+		getUTCDay(): Number
+		getUTCFullYear(): Number
+		getUTCHours(): Number
+		getUTCMilliseconds(): Number
+		getUTCMinutes(): Number
+		getUTCMonth(): Number
+		getUTCSeconds(): Number
+		setUTCDate(value: Number): Number
+		setUTCFullYear(year: Number, month: Number = -1, day: Number = -1): Number
+		setUTCHours(hours: Number, minutes: Number = -1, seconds: Number = -1, ms: Number = -1): Number
+		setUTCMilliseconds(value: Number): Number
+		setUTCMinutes(minutes: Number = -1, seconds: Number = -1, ms: Number = -1): Number
+		setUTCMonth(value: Number, day: Number = -1): Number
+		setUTCSeconds(seconds: Number = -1, ms: Number = -1): Number
+		toUTCString(): String
+	}
+}
+
 impl Date {
 	static {
 		create(...args): Date { // {{{
-			let utc = false
-			if args.length != 0 && args.last() is Boolean {
-				utc = args.pop()
-			}
-
 			if args.length != 0 {
-				if args[0] is Number {
-					let date: Date = null
-
-					if args.length == 7 {
-						 date = new Date(args[0], args[1], args[2], args[3], args[4], args[5], args[6])
-					}
-					else if args.length == 6 {
-						date = new Date(args[0], args[1], args[2], args[3], args[4], args[5], 0)
-					}
-					else if args.length == 5 {
-						date = new Date(args[0], args[1], args[2], args[3], args[4], 0, 0)
-					}
-					else if args.length == 3 {
-						date = new Date(args[0], args[1], args[2], 0, 0, 0, 0)
-					}
-					else if args.length == 1 {
-						date = new Date(args[0])
-					}
-
-					if date != null {
-						if utc {
-							date.add('minutes', -date.getTimezoneOffset())
-						}
-
-						return date
-					}
+				if args[0] is NS {
+					#[rules(ignore-misfit)]
+					return new Date(...args!!)
 				}
 				else if args[0] is Date {
 					return new Date(args[0])
@@ -55,91 +58,94 @@ impl Date {
 
 			return new Date()
 		} // }}}
-		getTime(value) { // {{{
-			if value.getTime is Function {
-				return value.getTime()
-			}
-			else if value.time is Function {
-				return value.time()
-			}
-			else if value.getEpochTime is Function {
+		getTime(value: Date): Number => value.getEpochTime()
+		getTime(value: Object): Number { // {{{
+			if value.getEpochTime is Function {
 				return value.getEpochTime()
 			}
-			else {
+			else if value.epochTime is Function {
 				return value.epochTime()
 			}
-		} // }}}
-		isTime(value): Boolean { // {{{
-			if value is Object {
-				if value.getTime is Function || value.time is Function || value.getEpochTime is Function || value.epochTime is Function {
-					return true
-				}
+			else if value.getTime is Function {
+				return value.getTime()
 			}
-
-			return false
+			else {
+				return value.time()
+			}
 		} // }}}
-		today(utc: Boolean = false): Date => new Date().midnight(utc)
-		tomorrow(utc: Boolean = false): Date => new Date().midnight(utc).add('day', 1)
-		yesterday(utc: Boolean = false): Date => new Date().midnight(utc).add('day', -1)
+		getTime(value): Number => 0
+		isTime(value: Date): Boolean => true
+		isTime(value: Object): Boolean { // {{{
+			return value.getEpochTime is Function || value.epochTime is Function || value.getTime is Function || value.time is Function
+		} // }}}
+		isTime(value): Boolean => false
+		today(): Date => new Date().midnight()
+		tomorrow(): Date => new Date().midnight().add('day', 1)
+		yesterday(): Date => new Date().midnight().add('day', -1)
 	}
-	add(properties: Dictionary): Date ~ ParseError { // {{{
-		for const property: NS, name of properties {
-			if name[0] == 'd' && (name == 'd' || name == 'day' || name == 'days') {
-				this.setDate(this.getDate() + property.toInt())
+	overwrite constructor(year: NS, month: NS, day: NS = 1, hours: NS = 0, minutes: NS = 0, seconds: NS = 0, milliseconds: NS = 0) { // {{{
+		precursor(year, month - 1, day, hours, minutes, seconds, milliseconds)
+
+		this.setUTCMinutes(this.getUTCMinutes() - this.getTimezoneOffset())
+	} // }}}
+	add(name: String, value: Number): Date { // {{{
+		if name[0] == 'd' && (name == 'd' || name == 'day' || name == 'days') {
+			this.setUTCDate(this.getUTCDate() + value)
+		}
+		else if name[0] == 'h' && (name == 'h' || name == 'hour' || name == 'hours') {
+			this.setUTCHours(this.getUTCHours() + value)
+		}
+		else if name[0] == 'm' {
+			if name == 'ms' || name == 'millisecond' || name == 'milliseconds' {
+				this.setUTCMilliseconds(this.getUTCMilliseconds() + value)
 			}
-			else if name[0] == 'h' && (name == 'h' || name == 'hour' || name == 'hours') {
-				this.setHours(this.getHours() + property.toInt())
+			else if name == 'mn' || name == 'minute' || name == 'minutes' {
+				this.setUTCMinutes(this.getUTCMinutes() + value)
 			}
-			else if name[0] == 'm' {
-				if name == 'ms' || name == 'millisecond' || name == 'milliseconds' {
-					this.setMilliseconds(this.getMilliseconds() + property.toInt())
-				}
-				else if name == 'mn' || name == 'minute' || name == 'minutes' {
-					this.setMinutes(this.getMinutes() + property.toInt())
-				}
-				else if name == 'm' || name == 'month' || name == 'months' {
-					this.setMonth(this.getMonth() + property.toInt())
-				}
+			else if name == 'm' || name == 'month' || name == 'months' {
+				this.setUTCMonth(this.getUTCMonth() + value)
 			}
-			else if name[0] == 's' && (name == 's' || name == 'second' || name == 'seconds') {
-				this.setSeconds(this.getSeconds() + property.toInt())
-			}
-			else if name[0] == 'w' && (name == 'w' || name == 'week' || name == 'weeks') {
-				this.setDate(this.getDate() + (property.toInt() * 7))
-			}
-			else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
-				this.setFullYear(this.getFullYear() + property.toInt())
-			}
+		}
+		else if name[0] == 's' && (name == 's' || name == 'second' || name == 'seconds') {
+			this.setUTCSeconds(this.getUTCSeconds() + value)
+		}
+		else if name[0] == 'w' && (name == 'w' || name == 'week' || name == 'weeks') {
+			this.setUTCDate(this.getUTCDate() + (value * 7))
+		}
+		else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
+			this.setUTCFullYear(this.getUTCFullYear() + value)
 		}
 
 		return this
 	} // }}}
-	add(name: String, value: Number): Date { // {{{
-		if name[0] == 'd' && (name == 'd' || name == 'day' || name == 'days') {
-			this.setDate(this.getDate() + value)
-		}
-		else if name[0] == 'h' && (name == 'h' || name == 'hour' || name == 'hours') {
-			this.setHours(this.getHours() + value)
-		}
-		else if name[0] == 'm' {
-			if name == 'ms' || name == 'millisecond' || name == 'milliseconds' {
-				this.setMilliseconds(this.getMilliseconds() + value)
+	add(properties: Dictionary): Date ~ ParseError { // {{{
+		for const property: NS, name of properties {
+			if name[0] == 'd' && (name == 'd' || name == 'day' || name == 'days') {
+				this.setUTCDate(this.getUTCDate() + property.toInt())
 			}
-			else if name == 'mn' || name == 'minute' || name == 'minutes' {
-				this.setMinutes(this.getMinutes() + value)
+			else if name[0] == 'h' && (name == 'h' || name == 'hour' || name == 'hours') {
+				this.setUTCHours(this.getUTCHours() + property.toInt())
 			}
-			else if name == 'm' || name == 'month' || name == 'months' {
-				this.setMonth(this.getMonth() + value)
+			else if name[0] == 'm' {
+				if name == 'ms' || name == 'millisecond' || name == 'milliseconds' {
+					this.setUTCMilliseconds(this.getUTCMilliseconds() + property.toInt())
+				}
+				else if name == 'mn' || name == 'minute' || name == 'minutes' {
+					this.setUTCMinutes(this.getUTCMinutes() + property.toInt())
+				}
+				else if name == 'm' || name == 'month' || name == 'months' {
+					this.setUTCMonth(this.getUTCMonth() + property.toInt())
+				}
 			}
-		}
-		else if name[0] == 's' && (name == 's' || name == 'second' || name == 'seconds') {
-			this.setSeconds(this.getSeconds() + value)
-		}
-		else if name[0] == 'w' && (name == 'w' || name == 'week' || name == 'weeks') {
-			this.setDate(this.getDate() + (value * 7))
-		}
-		else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
-			this.setFullYear(this.getFullYear() + value)
+			else if name[0] == 's' && (name == 's' || name == 'second' || name == 'seconds') {
+				this.setUTCSeconds(this.getUTCSeconds() + property.toInt())
+			}
+			else if name[0] == 'w' && (name == 'w' || name == 'week' || name == 'weeks') {
+				this.setUTCDate(this.getUTCDate() + (property.toInt() * 7))
+			}
+			else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
+				this.setUTCFullYear(this.getUTCFullYear() + property.toInt())
+			}
 		}
 
 		return this
@@ -147,29 +153,29 @@ impl Date {
 	add(name: String, value: String): Date ~ ParseError => this.add(name, value.toInt())
 	difference(name: String, date: Date): Number { // {{{
 		if name[0] == 'd' && (name == 'd' || name == 'day' || name == 'days') {
-			return Math.round((date.getTime() - this.getTime()) / 86400000)
+			return Math.round((date.getEpochTime() - this.getEpochTime()) / 86400000)
 		}
 		else if name[0] == 'h' && (name == 'h' || name == 'hour' || name == 'hours') {
-			return Math.round((date.getTime() - this.getTime()) / 3600000)
+			return Math.round((date.getEpochTime() - this.getEpochTime()) / 3600000)
 		}
 		else if name[0] == 'm' {
 			if name == 'ms' || name == 'millisecond' || name == 'milliseconds' {
-				return date.getTime() - this.getTime()
+				return date.getEpochTime() - this.getEpochTime()
 			}
 			else if name == 'mn' || name == 'minute' || name == 'minutes' {
-				return Math.round((date.getTime() - this.getTime()) / 60000)
+				return Math.round((date.getEpochTime() - this.getEpochTime()) / 60000)
 			}
 			else if name == 'm' || name == 'month' || name == 'months' {
 				let that := this
-				if date.getTime() < this.getTime() {
+				if date.getEpochTime() < this.getEpochTime() {
 					that = date
 					date = this
 				}
 
 				let d = date.getMonth() - that.getMonth() - 2
 
-				if date.getFullYear() > that.getFullYear() {
-					d += (date.getFullYear() - that.getFullYear() - 1) * 12
+				if date.getYear() > that.getYear() {
+					d += (date.getYear() - that.getYear() - 1) * 12
 				}
 
 				if date.getDayOfMonth() > that.getDayOfMonth() {
@@ -203,23 +209,23 @@ impl Date {
 		}
 		else if name[0] == 's' {
 			if name == 's' || name == 'second' || name == 'seconds' {
-				return Math.round((date.getTime() - this.getTime()) / 1000)
+				return Math.round((date.getEpochTime() - this.getEpochTime()) / 1000)
 			}
 			else if name == 'sm' || name == 'semester' || name == 'semesters' {
 				return Math.round(this.difference('month', date) / 6)
 			}
 		}
 		else if name[0] == 'w' && (name == 'w' || name == 'week' || name == 'weeks') {
-			return Math.round(Math.round((date.getTime() - this.getTime()) / 86400000) / 7)
+			return Math.round(Math.round((date.getEpochTime() - this.getEpochTime()) / 86400000) / 7)
 		}
 		else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
 			let that := this
-			if date.getTime() < this.getTime() {
+			if date.getEpochTime() < this.getEpochTime() {
 				that = date
 				date = this
 			}
 
-			let d = date.getFullYear() - that.getFullYear() - 2
+			let d = date.getYear() - that.getYear() - 2
 
 			if date.getMonth() > that.getMonth() {
 				++d
@@ -253,99 +259,53 @@ impl Date {
 		}
 	} // }}}
 	difference(name: String, ...args): Number => this.difference(name, Date.create(...args))
-	endOf(space: String, utc: Boolean = false): Date { // {{{
-		if utc {
-			switch space {
-				'year' => {
-					this.setUTCMonth(11)
-					this.setUTCDate(this.getDaysInMonth())
-					this.setUTCHours(23)
-					this.setUTCMinutes(59)
-					this.setUTCSeconds(59)
-					this.setUTCMilliseconds(999)
-				}
-				'month' => {
-					this.setUTCDate(this.getDaysInMonth())
-					this.setUTCHours(23)
-					this.setUTCMinutes(59)
-					this.setUTCSeconds(59)
-					this.setUTCMilliseconds(999)
-				}
-				'day' => {
-					this.setUTCHours(23)
-					this.setUTCMinutes(59)
-					this.setUTCSeconds(59)
-					this.setUTCMilliseconds(999)
-				}
-				'hour' => {
-					this.setUTCMinutes(59)
-					this.setUTCSeconds(59)
-					this.setUTCMilliseconds(999)
-				}
-				'minute' => {
-					this.setUTCSeconds(59)
-					this.setUTCMilliseconds(999)
-				}
-				'second' => {
-					this.setUTCMilliseconds(999)
-				}
-				'week' => {
-					this.add('day', 6 - (this.getUTCDay() - 1).mod(7))
-					this.setUTCHours(23)
-					this.setUTCMinutes(59)
-					this.setUTCSeconds(59)
-					this.setUTCMilliseconds(999)
-				}
+	endOf(space: String): Date { // {{{
+		switch space {
+			'year' => {
+				this.setUTCMonth(11)
+				this.setUTCDate(this.getDaysInMonth())
+				this.setUTCHours(23)
+				this.setUTCMinutes(59)
+				this.setUTCSeconds(59)
+				this.setUTCMilliseconds(999)
 			}
-		}
-		else {
-			switch space {
-				'year' => {
-					this.setMonth(11)
-					this.setDate(this.getDaysInMonth())
-					this.setHours(23)
-					this.setMinutes(59)
-					this.setSeconds(59)
-					this.setMilliseconds(999)
-				}
-				'month' => {
-					this.setDate(this.getDaysInMonth())
-					this.setHours(23)
-					this.setMinutes(59)
-					this.setSeconds(59)
-					this.setMilliseconds(999)
-				}
-				'day' => {
-					this.setHours(23)
-					this.setMinutes(59)
-					this.setSeconds(59)
-					this.setMilliseconds(999)
-				}
-				'hour' => {
-					this.setMinutes(59)
-					this.setSeconds(59)
-					this.setMilliseconds(999)
-				}
-				'minute' => {
-					this.setSeconds(59)
-					this.setMilliseconds(999)
-				}
-				'second' => {
-					this.setMilliseconds(999)
-				}
-				'week' => {
-					this.add('day', 6 - (this.getDay() - 1).mod(7))
-					this.setHours(23)
-					this.setMinutes(59)
-					this.setSeconds(59)
-					this.setMilliseconds(999)
-				}
+			'month' => {
+				this.setUTCDate(this.getDaysInMonth())
+				this.setUTCHours(23)
+				this.setUTCMinutes(59)
+				this.setUTCSeconds(59)
+				this.setUTCMilliseconds(999)
+			}
+			'day' => {
+				this.setUTCHours(23)
+				this.setUTCMinutes(59)
+				this.setUTCSeconds(59)
+				this.setUTCMilliseconds(999)
+			}
+			'hour' => {
+				this.setUTCMinutes(59)
+				this.setUTCSeconds(59)
+				this.setUTCMilliseconds(999)
+			}
+			'minute' => {
+				this.setUTCSeconds(59)
+				this.setUTCMilliseconds(999)
+			}
+			'second' => {
+				this.setUTCMilliseconds(999)
+			}
+			'week' => {
+				this.add('day', 6 - (this.getUTCDay() - 1).mod(7))
+				this.setUTCHours(23)
+				this.setUTCMinutes(59)
+				this.setUTCSeconds(59)
+				this.setUTCMilliseconds(999)
 			}
 		}
 
 		return this
 	} // }}}
-	future(value: String, utc: Boolean = false): Date { // {{{
+	future(value: String): Date { // {{{
 		value = value.toLowerCase()
 
 		let index: Number
@@ -359,7 +319,7 @@ impl Date {
 			index = $days.full.indexOf(value)
 		}
 
-		const dw = utc ? this.getUTCDayOfWeek() : this.getDayOfWeek()
+		const dw = this.getDayOfWeek()
 		if dw == index {
 			this.add('day', 7)
 		}
@@ -369,7 +329,7 @@ impl Date {
 
 		return this
 	} // }}}
-	futureOrPresent(value: String, utc: Boolean = false): Date { // {{{
+	futureOrPresent(value: String): Date { // {{{
 		value = value.toLowerCase()
 
 		let index: Number
@@ -383,152 +343,48 @@ impl Date {
 			index = $days.full.indexOf(value)
 		}
 
-		const dw = utc ? this.getUTCDayOfWeek() : this.getDayOfWeek()
+		const dw = this.getDayOfWeek()
 		if dw != index {
 			this.add('day', index < dw ? index + 7 - dw : index - dw)
 		}
 
 		return this
 	} // }}}
-	getDaysInMonth(utc: Boolean = false): Number { // {{{
-		const m = utc ? this.getUTCMonth() : this.getMonth()
-		if m == 1 && this.isLeapYear(utc) {
+	getDaysInMonth(): Number { // {{{
+		const m = this.getUTCMonth()
+		if m == 1 && this.isLeapYear() {
 			return 29
 		}
 		else {
 			return $months[m]
 		}
 	} // }}}
-	getDaysInYear(utc: Boolean = false): Number => this.isLeapYear(utc) ? 366 : 365
-	getDayOfMonth(): Number => this.getDate()
-	getDayOfWeek(): Number => this.getDay()
-	getDayOfYear(): Number => Math.ceil((this.clone().midnight().getTime() - new Date(this.getFullYear(), 0, 1).getTime()) / 86400000) + 1
-	getUTCDayOfMonth(): Number => this.getUTCDate()
-	getUTCDayOfWeek(): Number => this.getUTCDay()
-	getUTCDayOfYear(): Number => Math.ceil((this.clone().midnight(true).getTime() - Date.create(this.getUTCFullYear(), 0, 1, true).getTime()) / 86400000) + 1
-	getUTCWeek(): Number { // {{{
-		const dw = (Date.create(this.getUTCFullYear(), 0, 1, true).getUTCDayOfWeek() - 1).mod(7)
-		let days := this.getUTCDayOfYear()
+	getDaysInYear(): Number => this.isLeapYear() ? 366 : 365
+	getDayOfMonth(): Number => this.getUTCDate()
+	getDayOfWeek(): Number { // {{{
+		const dw = this.getUTCDay()
 
-		if 8 - dw < 4 {
-			if days < 7 {
-				days = 0
-			}
-			else {
-				days += dw - 7
-			}
-		}
-		else {
-			if days < 7 {
-				days = 7
-			}
-			else {
-				days += dw
-			}
-		}
-
-		if days <= 0 {
-			return 0
-		}
-
-		const week = Math.ceil(days / 7)
-
-		if week >= 52 && this.getUTCDate() >= 25 && (days = days.mod(7)) && 8 - days >= 4 {
-			return 0
-		}
-		else {
-			return week
-		}
+		return dw == 0 ? 7 : dw
 	} // }}}
-	getUTCYearOfWeek(): Number { // {{{
-		const m = this.getUTCMonth()
-		if m == 0 {
-			const d = this.getUTCDate()
-			if d == 1 {
-				if this.getUTCWeek() == 0 {
-					return this.getUTCFullYear() - 1
-				}
-			}
-			else {
-				this.setUTCDate(1)
-
-				if this.getUTCWeek() == 0 {
-					this.setUTCDate(d)
-
-					return this.getUTCFullYear() - 1
-				}
-				else {
-					this.setUTCDate(d)
-				}
-			}
-		}
-		else if m == 11 {
-			const d = this.getUTCDate()
-			if d == 31 {
-				if this.getUTCWeek() == 0 {
-					return this.getUTCFullYear() + 1
-				}
-			}
-			else {
-				this.setUTCDate(31)
-
-				if this.getUTCWeek() == 0 {
-					this.setUTCDate(d)
-
-					return this.getUTCFullYear() + 1
-				}
-				else {
-					this.setUTCDate(d)
-				}
-			}
-		}
-
-		return this.getUTCFullYear()
+	getDayOfYear(): Number { // {{{
+		return Math.ceil((this.clone().midnight().getTime() - new Date(this.getYear(), 1, 1).getTime()) / 86400000) + 1
 	} // }}}
 	getWeek(): Number { // {{{
-		const dw = (new Date(this.getFullYear(), 0, 1).getDayOfWeek() - 1).mod(7)
-		let days := this.getDayOfYear()
+		const dw = new Date(this.getYear(), 1, 1).getDayOfWeek() - 1
+		const d = (this.getDayOfYear() + dw) / 7
+		const w = Math.ceil(d) - (7 - dw >= 4 ? 0 : 1)
 
-		if 8 - dw < 4 {
-			if days < 7 {
-				days = 0
-			}
-			else {
-				days += dw - 7
-			}
+		if w == 53 {
+			return d - 52 >= 0.5714 ? 53 : 0
 		}
 		else {
-			if days < 7 {
-				days = 7
-			}
-			else {
-				days += dw
-			}
-		}
-
-		if days <= 0 {
-			return 0
-		}
-
-		const week = Math.ceil(days / 7)
-
-		if week >= 52 && this.getDate() >= 25 && (days = days.mod(7)) && 8 - days >= 4 {
-			return 0
-		}
-		else {
-			return week
+			return w
 		}
 	} // }}}
-	getWeeksInYear(utc: Boolean = false): Number { // {{{
-		let dw: Number, days: Number
-		if utc {
-			dw = (new Date(this.getUTCFullYear(), 0, 1, true).getUTCDayOfWeek() - 1).mod(7)
-			days = new Date(this.getUTCFullYear(), 11, 31, true).getUTCDayOfYear()
-		}
-		else {
-			dw = (new Date(this.getFullYear(), 0, 1).getDayOfWeek() - 1).mod(7)
-			days = new Date(this.getFullYear(), 11, 31).getDayOfYear()
-		}
+	getWeeksInYear(): Number { // {{{
+		const dw = new Date(this.getYear(), 1, 1).getDayOfWeek().mod(7)
+		let days = new Date(this.getYear(), 12, 31).getDayOfYear()
+
 		if 8 - dw < 4 {
 			days += dw - 7
 		}
@@ -546,131 +402,126 @@ impl Date {
 	} // }}}
 	getYearOfWeek() { // {{{
 		const m = this.getMonth()
-		if m == 0 {
-			const d = this.getDate()
+		if m == 1 {
+			const d = this.getDay()
+
 			if d == 1 {
 				if this.getWeek() == 0 {
-					return this.getFullYear() - 1
+					return this.getYear() - 1
 				}
 			}
 			else {
-				this.setDate(1)
+				this.setDay(1)
 
 				if this.getWeek() == 0 {
-					this.setDate(d)
+					this.setDay(d)
 
-					return this.getFullYear() - 1
+					return this.getYear() - 1
 				}
 				else {
-					this.setDate(d)
+					this.setDay(d)
 				}
 			}
 		}
-		else if m == 11 {
-			const d = this.getDate()
+		else if m == 12 {
+			const d = this.getDay()
+
 			if d == 31 {
 				if this.getWeek() == 0 {
-					return this.getFullYear() + 1
+					return this.getYear() + 1
 				}
 			}
 			else {
-				this.setDate(31)
+				this.setDay(31)
 
 				if this.getWeek() == 0 {
-					this.setDate(d)
+					this.setDay(d)
 
-					return this.getFullYear() + 1
+					return this.getYear() + 1
 				}
 				else {
-					this.setDate(d)
+					this.setDay(d)
 				}
 			}
 		}
 
-		return this.getFullYear()
+		return this.getYear()
 	} // }}}
+	getDay(): Number => this.getUTCDate()
+	getHours(): Number => this.getUTCHours()
+	getMilliseconds(): Number => this.getUTCMilliseconds()
+	getMinutes(): Number => this.getUTCMinutes()
+	getMonth(): Number => this.getUTCMonth() + 1
+	getSeconds(): Number => this.getUTCSeconds()
+	getYear(): Number => this.getUTCFullYear()
+	isAfter(value: Date): Boolean => this.getEpochTime() > value.getEpochTime()
 	isAfter(value): Boolean { // {{{
-		let date
-		if Date.isTime(value) {
-			date = Date.getTime(value)
-		}
-		else {
-			date = Date.create(value)
-		}
+		const time = Date.isTime(value) ? Date.getTime(value) : Date.create(value).getEpochTime()
 
-		return this.getTime() > date.getTime()
+		return this.getEpochTime() > time
 	} // }}}
-	isAfter(...args): Boolean => this.getTime() > Date.create(...args).getTime()
+	isAfter(...args): Boolean => this.isAfter(Date.create(...args))
+	isBefore(value: Date): Boolean => this.getEpochTime() < value.getEpochTime()
 	isBefore(value): Boolean { // {{{
-		let date
-		if Date.isTime(value) {
-			date = Date.getTime(value)
+		const time = Date.isTime(value) ? Date.getTime(value) : Date.create(value).getEpochTime()
+
+		return this.getEpochTime() < time
+	} // }}}
+	isBefore(...args): Boolean => this.isBefore(Date.create(...args))
+	isBetween(value1: Date, value2: Date): Boolean { // {{{
+		const time1 = value1.getEpochTime()
+		const time2 = value2.getEpochTime()
+
+		if time1 > time2 {
+			return time2 <= this.getEpochTime() <= time1
 		}
 		else {
-			date = Date.create(value)
+			return time1 <= this.getEpochTime() <= time2
 		}
-
-		return this.getTime() < date.getTime()
 	} // }}}
-	isBefore(...args): Boolean => this.getTime() < Date.create(...args).getTime()
 	isBetween(value1, value2): Boolean { // {{{
 		if Date.isTime(value1) {
 			value1 = Date.getTime(value1)
 		}
 		else {
-			value1 = Date.create(value1).getTime()
+			value1 = Date.create(value1).getEpochTime()
 		}
 		if Date.isTime(value2) {
 			value2 = Date.getTime(value2)
 		}
 		else {
-			value2 = Date.create(value2).getTime()
+			value2 = Date.create(value2).getEpochTime()
 		}
 
 		if value1 > value2 {
-			return this.getTime() <= value1 && this.getTime() >= value2
+			return value2 <= this.getEpochTime() <= value1
 		}
 		else {
-			return this.getTime() >= value1 && this.getTime() <= value2
+			return value1 <= this.getEpochTime() <= value2
 		}
 	} // }}}
-	isLeapYear(utc: Boolean = false): Boolean { // {{{
-		const year = utc ? this.getUTCFullYear() : this.getFullYear()
+	isLeapYear(): Boolean { // {{{
+		const year = this.getUTCFullYear()
 
 		return (year % 400 == 0) || (year % 4 == 0 && year % 100 != 0)
 	} // }}}
-	midnight(utc: Boolean = false): Date { // {{{
-		if utc {
-			this.setUTCHours(0)
-			this.setUTCMinutes(0)
-			this.setUTCSeconds(0)
-			this.setUTCMilliseconds(0)
-		}
-		else {
-			this.setHours(0)
-			this.setMinutes(0)
-			this.setSeconds(0)
-			this.setMilliseconds(0)
-		}
-		return this
-	} // }}}
-	noon(utc: Boolean = false): Date { // {{{
-		if utc {
-			this.setUTCHours(12)
-			this.setUTCMinutes(0)
-			this.setUTCSeconds(0)
-			this.setUTCMilliseconds(0)
-		}
-		else {
-			this.setHours(12)
-			this.setMinutes(0)
-			this.setSeconds(0)
-			this.setMilliseconds(0)
-		}
+	midnight(): Date { // {{{
+		this.setHours(0)
+		this.setMinutes(0)
+		this.setSeconds(0)
+		this.setMilliseconds(0)
 
 		return this
 	} // }}}
-	past(value: String, utc: Boolean = false): Date { // {{{
+	noon(): Date { // {{{
+		this.setUTCHours(12)
+		this.setUTCMinutes(0)
+		this.setUTCSeconds(0)
+		this.setUTCMilliseconds(0)
+
+		return this
+	} // }}}
+	past(value: String): Date { // {{{
 		value = value.toLowerCase()
 
 		let index: Number
@@ -684,7 +535,7 @@ impl Date {
 			index = $days.full.indexOf(value)
 		}
 
-		const dw = utc ? this.getUTCDayOfWeek() : this.getDayOfWeek()
+		const dw = this.getDayOfWeek()
 		if dw == index {
 			this.rewind('day', 7)
 		}
@@ -694,7 +545,7 @@ impl Date {
 
 		return this
 	} // }}}
-	pastOrPresent(value: String, utc: Boolean = false): Date { // {{{
+	pastOrPresent(value: String): Date { // {{{
 		value = value.toLowerCase()
 
 		let index: Number
@@ -708,7 +559,7 @@ impl Date {
 			index = $days.full.indexOf(value)
 		}
 
-		const dw = utc ? this.getUTCDayOfWeek() : this.getDayOfWeek()
+		const dw = this.getDayOfWeek()
 		if dw != index {
 			this.rewind('day',  dw < index ? dw + 7 - index : dw - index)
 		}
@@ -718,30 +569,30 @@ impl Date {
 	rewind(properties: Dictionary): Date ~ ParseError { // {{{
 		for const property: NS, name of properties {
 			if name[0] == 'd' && (name == 'd' || name == 'day' || name == 'days') {
-				this.setDate(this.getDate() - property.toInt())
+				this.setUTCDate(this.getUTCDate() - property.toInt())
 			}
 			else if name[0] == 'h' && (name == 'h' || name == 'hour' || name == 'hours') {
-				this.setHours(this.getHours() - property.toInt())
+				this.setUTCHours(this.getUTCHours() - property.toInt())
 			}
 			else if name[0] == 'm' {
 				if name == 'ms' || name == 'millisecond' || name == 'milliseconds' {
-					this.setMilliseconds(this.getMilliseconds() - property.toInt())
+					this.setUTCMilliseconds(this.getUTCMilliseconds() - property.toInt())
 				}
 				else if name == 'mn' || name == 'minute' || name == 'minutes' {
-					this.setMinutes(this.getMinutes() - property.toInt())
+					this.setUTCMinutes(this.getUTCMinutes() - property.toInt())
 				}
 				else if name == 'm' || name == 'month' || name == 'months' {
-					this.setMonth(this.getMonth() - property.toInt())
+					this.setUTCMonth(this.getUTCMonth() - property.toInt())
 				}
 			}
 			else if name[0] == 's' && (name == 's' || name == 'second' || name == 'seconds') {
-				this.setSeconds(this.getSeconds() - property.toInt())
+				this.setUTCSeconds(this.getUTCSeconds() - property.toInt())
 			}
 			else if name[0] == 'w' && (name == 'w' || name == 'week' || name == 'weeks') {
-				this.setDate(this.getDate() - (property.toInt() * 7))
+				this.setUTCDate(this.getUTCDate() - (property.toInt() * 7))
 			}
 			else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
-				this.setFullYear(this.getFullYear() - property.toInt())
+				this.setUTCFullYear(this.getUTCFullYear() - property.toInt())
 			}
 		}
 
@@ -749,205 +600,128 @@ impl Date {
 	} // }}}
 	rewind(name: String, value: Number): Date { // {{{
 		if name[0] == 'd' && (name == 'd' || name == 'day' || name == 'days') {
-			this.setDate(this.getDate() - value)
+			this.setUTCDate(this.getUTCDate() - value)
 		}
 		else if name[0] == 'h' && (name == 'h' || name == 'hour' || name == 'hours') {
-			this.setHours(this.getHours() - value)
+			this.setUTCHours(this.getUTCHours() - value)
 		}
 		else if name[0] == 'm' {
 			if name == 'ms' || name == 'millisecond' || name == 'milliseconds' {
-				this.setMilliseconds(this.getMilliseconds() - value)
+				this.setUTCMilliseconds(this.getUTCMilliseconds() - value)
 			}
 			else if name == 'mn' || name == 'minute' || name == 'minutes' {
-				this.setMinutes(this.getMinutes() - value)
+				this.setUTCMinutes(this.getUTCMinutes() - value)
 			}
 			else if name == 'm' || name == 'month' || name == 'months' {
-				this.setMonth(this.getMonth() - value)
+				this.setUTCMonth(this.getUTCMonth() - value)
 			}
 		}
 		else if name[0] == 's' && (name == 's' || name == 'second' || name == 'seconds') {
-			this.setSeconds(this.getSeconds() - value)
+			this.setUTCSeconds(this.getUTCSeconds() - value)
 		}
 		else if name[0] == 'w' && (name == 'w' || name == 'week' || name == 'weeks') {
-			this.setDate(this.getDate() - (value * 7))
+			this.setUTCDate(this.getUTCDate() - (value * 7))
 		}
 		else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
-			this.setFullYear(this.getFullYear() - value)
+			this.setUTCFullYear(this.getUTCFullYear() - value)
 		}
 
 		return this
 	} // }}}
 	rewind(name: String, value: String): Date ~ ParseError => this.rewind(name, value.toInt())
-	set(properties: Dictionary, utc: Boolean = false): Date ~ ParseError { // {{{
-		if utc {
-			for const property: NS, name of properties {
-				if name[0] == 'd' {
-					if name == 'dm' || name == 'dayofmonth' {
-						this.setUTCDayOfMonth(property.toInt())
-					}
-					else if name == 'dw' || name == 'dayofweek' {
-						this.setUTCDayOfWeek(property.toInt())
-					}
-					else if name == 'dy' || name == 'dayofyear' {
-						this.setUTCDayOfYear(property.toInt())
-					}
-				}
-				else if name[0] == 'h' && (name == 'h' || name == 'hour' || name == 'hours') {
-					this.setUTCHours(property.toInt())
-				}
-				else if name[0] == 'm' {
-					if name == 'ms' || name == 'millisecond' || name == 'milliseconds' {
-						this.setUTCMilliseconds(property.toInt())
-					}
-					else if name == 'mn' || name == 'minute' || name == 'minutes' {
-						this.setUTCMinutes(property.toInt())
-					}
-					else if name == 'm' || name == 'month' || name == 'months' {
-						this.setUTCMonth(property.toInt())
-					}
-				}
-				else if name[0] == 's' && (name == 's' || name == 'second' || name == 'seconds') {
-					this.setUTCSeconds(property.toInt())
-				}
-				else if name[0] == 'w' && (name == 'w' || name == 'week' || name == 'weeks') {
-					this.setUTCWeek(property.toInt())
-				}
-				else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
-					this.setUTCFullYear(property.toInt())
-				}
-			}
-		}
-		else {
-			for const property: NS, name of properties {
-				if name[0] == 'd' {
-					if name == 'dm' || name == 'dayofmonth' {
-						this.setDayOfMonth(property.toInt())
-					}
-					else if name == 'dw' || name == 'dayofweek' {
-						this.setDayOfWeek(property.toInt())
-					}
-					else if name == 'dy' || name == 'dayofyear' {
-						this.setDayOfYear(property.toInt())
-					}
-				}
-				else if name[0] == 'h' && (name == 'h' || name == 'hour' || name == 'hours') {
-					this.setHours(property.toInt())
-				}
-				else if name[0] == 'm' {
-					if name == 'ms' || name == 'millisecond' || name == 'milliseconds' {
-						this.setMilliseconds(property.toInt())
-					}
-					else if name == 'mn' || name == 'minute' || name == 'minutes' {
-						this.setMinutes(property.toInt())
-					}
-					else if name == 'm' || name == 'month' || name == 'months' {
-						this.setMonth(property.toInt())
-					}
-				}
-				else if name[0] == 's' && (name == 's' || name == 'second' || name == 'seconds') {
-					this.setSeconds(property.toInt())
-				}
-				else if name[0] == 'w' && (name == 'w' || name == 'week' || name == 'weeks') {
-					this.setWeek(property.toInt())
-				}
-				else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
-					this.setFullYear(property.toInt())
-				}
-			}
-		}
-
-		return this
-	} // }}}
-	set(name: String, value: Number, utc: Boolean = false): Date { // {{{
-		if utc {
+	set(properties: Dictionary): Date ~ ParseError { // {{{
+		for const property: NS, name of properties {
 			if name[0] == 'd' {
-				if name == 'dm' || name == 'dayofmonth' {
-					this.setUTCDayOfMonth(value)
+				if name == 'd' || name == 'day' || name == 'dayofmonth' {
+					this.setUTCDate(property.toInt())
 				}
 				else if name == 'dw' || name == 'dayofweek' {
-					this.setUTCDayOfWeek(value)
+					this.setDayOfWeek(property.toInt())
 				}
 				else if name == 'dy' || name == 'dayofyear' {
-					this.setUTCDayOfYear(value)
+					this.setDayOfYear(property.toInt())
 				}
 			}
 			else if name[0] == 'h' && (name == 'h' || name == 'hour' || name == 'hours') {
-				this.setUTCHours(value)
+				this.setUTCHours(property.toInt())
 			}
 			else if name[0] == 'm' {
 				if name == 'ms' || name == 'millisecond' || name == 'milliseconds' {
-					this.setUTCMilliseconds(value)
+					this.setUTCMilliseconds(property.toInt())
 				}
 				else if name == 'mn' || name == 'minute' || name == 'minutes' {
-					this.setUTCMinutes(value)
+					this.setUTCMinutes(property.toInt())
 				}
 				else if name == 'm' || name == 'month' || name == 'months' {
-					this.setUTCMonth(value)
+					this.setUTCMonth(property.toInt() - 1)
 				}
 			}
 			else if name[0] == 's' && (name == 's' || name == 'second' || name == 'seconds') {
-				this.setUTCSeconds(value)
+				this.setUTCSeconds(property.toInt())
 			}
 			else if name[0] == 'w' && (name == 'w' || name == 'week' || name == 'weeks') {
-				this.setUTCWeek(value)
+				this.setWeek(property.toInt())
 			}
 			else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
-				this.setUTCFullYear(value)
-			}
-		}
-		else {
-			if name[0] == 'd' {
-				if name == 'dm' || name == 'dayofmonth' {
-					this.setDayOfMonth(value)
-				}
-				else if name == 'dw' || name == 'dayofweek' {
-					this.setDayOfWeek(value)
-				}
-				else if name == 'dy' || name == 'dayofyear' {
-					this.setDayOfYear(value)
-				}
-			}
-			else if name[0] == 'h' && (name == 'h' || name == 'hour' || name == 'hours') {
-				this.setHours(value)
-			}
-			else if name[0] == 'm' {
-				if name == 'ms' || name == 'millisecond' || name == 'milliseconds' {
-					this.setMilliseconds(value)
-				}
-				else if name == 'mn' || name == 'minute' || name == 'minutes' {
-					this.setMinutes(value)
-				}
-				else if name == 'm' || name == 'month' || name == 'months' {
-					this.setMonth(value)
-				}
-			}
-			else if name[0] == 's' && (name == 's' || name == 'second' || name == 'seconds') {
-				this.setSeconds(value)
-			}
-			else if name[0] == 'w' && (name == 'w' || name == 'week' || name == 'weeks') {
-				this.setWeek(value)
-			}
-			else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
-				this.setFullYear(value)
+				this.setUTCFullYear(property.toInt())
 			}
 		}
 
 		return this
 	} // }}}
-	set(name: String, value: String, utc: Boolean = false): Date ~ ParseError => this.set(name, value.toInt(), utc)
-	overwrite setDate(value: Number): Date  { // {{{
-		precursor(value)
+	set(name: String, value: Number): Date { // {{{
+		if name[0] == 'd' {
+			if name == 'd' || name == 'day' || name == 'dayofmonth' {
+				this.setUTCDate(value)
+			}
+			else if name == 'dw' || name == 'dayofweek' {
+				this.setDayOfWeek(value)
+			}
+			else if name == 'dy' || name == 'dayofyear' {
+				this.setDayOfYear(value)
+			}
+		}
+		else if name[0] == 'h' && (name == 'h' || name == 'hour' || name == 'hours') {
+			this.setUTCHours(value)
+		}
+		else if name[0] == 'm' {
+			if name == 'ms' || name == 'millisecond' || name == 'milliseconds' {
+				this.setUTCMilliseconds(value)
+			}
+			else if name == 'mn' || name == 'minute' || name == 'minutes' {
+				this.setUTCMinutes(value)
+			}
+			else if name == 'm' || name == 'month' || name == 'months' {
+				this.setUTCMonth(value - 1)
+			}
+		}
+		else if name[0] == 's' && (name == 's' || name == 'second' || name == 'seconds') {
+			this.setUTCSeconds(value)
+		}
+		else if name[0] == 'w' && (name == 'w' || name == 'week' || name == 'weeks') {
+			this.setWeek(value)
+		}
+		else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
+			this.setUTCFullYear(value)
+		}
 
 		return this
 	} // }}}
-	setDate(value: String): Date ~ ParseError => this.setDate(value.toInt())
-	setDayOfMonth(value: Number): Date => this.setDate(value)
-	setDayOfMonth(value: String): Date ~ ParseError => this.setDate(value.toInt())
+	set(name: String, value: String): Date ~ ParseError => this.set(name, value.toInt())
+	setDay(value: Number): Date { // {{{
+		this.setUTCDate(value)
+
+		return this
+	} // }}}
+	setDay(value: String): Date ~ ParseError => this.setDay(value.toInt())
+	setDayOfMonth(value: Number): Date { // {{{
+		this.setUTCDate(value)
+
+		return this
+	} // }}}
+	setDayOfMonth(value: String): Date ~ ParseError => this.setDayOfMonth(value.toInt())
 	setDayOfWeek(value: Number): Date { // {{{
-		const current = (this.getDay() - 1).mod(7)
-		value = (value - 1).mod(7)
-
-		this.add('day', value - current)
+		this.add('day', value - this.getDayOfWeek())
 
 		return this
 	} // }}}
@@ -978,73 +752,50 @@ impl Date {
 		}
 
 		this.setMonth(m)
-		this.setDate(value)
+		this.setDay(value)
 
 		return this
 	} // }}}
 	setDayOfYear(value: String): Date ~ ParseError => this.setDayOfYear(value.toInt())
-	overwrite setUTCDate(value: Number): Date  { // {{{
-		precursor(value)
+	setHours(value: Number): Date { // {{{
+		this.setUTCHours(value)
 
 		return this
 	} // }}}
-	setUTCDate(value: String): Date ~ ParseError => this.setUTCDate(value.toInt())
-	setUTCDayOfMonth(value: Number): Date => this.setUTCDate(value)
-	setUTCDayOfMonth(value: String): Date ~ ParseError => this.setUTCDate(value.toInt())
-	setUTCDayOfWeek(value: Number): Date { // {{{
-		const current = (this.getUTCDay() - 1).mod(7)
-		value = (value - 1).mod(7)
-
-		this.add('day', value - current)
+	setHours(value: String): Date ~ ParseError => this.setHours(value.toInt())
+	setMilliseconds(value: Number): Date { // {{{
+		this.setUTCMilliseconds(value)
 
 		return this
 	} // }}}
-	setUTCDayOfWeek(value: String): Date ~ ParseError => this.setUTCDayOfWeek(value.toInt())
-	setUTCDayOfYear(value: Number): Date { // {{{
-		let m = 0
-		for const i from 0 til 12 {
-			if i == 1 {
-				if this.isLeapYear(true) {
-					if value > $months[i] + 1 {
-						m++
-						value -= $months[i] + 1
-					}
-				}
-				else {
-					if value > $months[i] {
-						m++
-						value -= $months[i]
-					}
-				}
-			}
-			else {
-				if value > $months[i] {
-					m++
-					value -= $months[i]
-				}
-			}
-		}
-
-		this.setUTCMonth(m)
-		this.setUTCDate(value)
+	setMilliseconds(value: String): Date ~ ParseError => this.setMilliseconds(value.toInt())
+	setMinutes(value: Number): Date { // {{{
+		this.setUTCMinutes(value)
 
 		return this
 	} // }}}
-	setUTCDayOfYear(value: String): Date ~ ParseError => this.setUTCDayOfYear(value.toInt())
-	setUTCWeek(value: Number): Date { // {{{
-		const w = this.getUTCWeek()
-		if w != 0 || this.getUTCMonth() == 0 {
-			this.add('week', value - w)
-		}
-		else {
-			this.rewind('week', 1).add('week', value - this.getUTCWeek())
-		}
+	setMinutes(value: String): Date ~ ParseError => this.setMinutes(value.toInt())
+	setMonth(value: Number): Date { // {{{
+		this.setUTCMonth(value - 1)
+
 		return this
 	} // }}}
-	setUTCWeek(value: String): Date ~ ParseError => this.setUTCWeek(value.toInt())
+	setMonth(value: String): Date ~ ParseError => this.setMonth(value.toInt())
+	setSeconds(value: Number): Date { // {{{
+		this.setUTCSeconds(value)
+
+		return this
+	} // }}}
+	setSeconds(value: String): Date ~ ParseError => this.setSeconds(value.toInt())
+	setYear(value: Number): Date { // {{{
+		this.setUTCFullYear(value)
+
+		return this
+	} // }}}
+	setYear(value: String): Date ~ ParseError => this.setYear(value.toInt())
 	setWeek(value: Number): Date { // {{{
 		const w = this.getWeek()
-		if w != 0 || this.getMonth() == 0 {
+		if w != 0 || this.getMonth() == 1 {
 			this.add('week', value - w)
 		}
 		else {
@@ -1054,98 +805,53 @@ impl Date {
 		return this
 	} // }}}
 	setWeek(value: String): Date ~ ParseError => this.setWeek(value.toInt())
-	startOf(space: String, utc: Boolean = false): Date { // {{{
-		if utc {
-			switch space {
-				'year' => {
-					this.setUTCMonth(0)
-					this.setUTCDate(1)
-					this.setUTCHours(0)
-					this.setUTCMinutes(0)
-					this.setUTCSeconds(0)
-					this.setUTCMilliseconds(0)
-				}
-				'month' => {
-					this.setUTCDate(1)
-					this.setUTCHours(0)
-					this.setUTCMinutes(0)
-					this.setUTCSeconds(0)
-					this.setUTCMilliseconds(0)
-				}
-				'day' => {
-					this.setUTCHours(0)
-					this.setUTCMinutes(0)
-					this.setUTCSeconds(0)
-					this.setUTCMilliseconds(0)
-				}
-				'hour' => {
-					this.setUTCMinutes(0)
-					this.setUTCSeconds(0)
-					this.setUTCMilliseconds(0)
-				}
-				'minute' => {
-					this.setUTCSeconds(0)
-					this.setUTCMilliseconds(0)
-				}
-				'second' => {
-					this.setUTCMilliseconds(0)
-				}
-				'week' => {
-					this.rewind('day', (this.getUTCDay() - 1).mod(7))
-					this.setUTCHours(0)
-					this.setUTCMinutes(0)
-					this.setUTCSeconds(0)
-					this.setUTCMilliseconds(0)
-				}
+	startOf(space: String): Date { // {{{
+		switch space {
+			'year' => {
+				this.setUTCMonth(0)
+				this.setUTCDate(1)
+				this.setUTCHours(0)
+				this.setUTCMinutes(0)
+				this.setUTCSeconds(0)
+				this.setUTCMilliseconds(0)
 			}
-		}
-		else {
-			switch space {
-				'year' => {
-					this.setMonth(0)
-					this.setDate(1)
-					this.setHours(0)
-					this.setMinutes(0)
-					this.setSeconds(0)
-					this.setMilliseconds(0)
-				}
-				'month' => {
-					this.setDate(1)
-					this.setHours(0)
-					this.setMinutes(0)
-					this.setSeconds(0)
-					this.setMilliseconds(0)
-				}
-				'day' => {
-					this.setHours(0)
-					this.setMinutes(0)
-					this.setSeconds(0)
-					this.setMilliseconds(0)
-				}
-				'hour' => {
-					this.setMinutes(0)
-					this.setSeconds(0)
-					this.setMilliseconds(0)
-				}
-				'minute' => {
-					this.setSeconds(0)
-					this.setMilliseconds(0)
-				}
-				'second' => {
-					this.setMilliseconds(0)
-				}
-				'week' => {
-					this.rewind('day', (this.getDay() - 1).mod(7))
-					this.setHours(0)
-					this.setMinutes(0)
-					this.setSeconds(0)
-					this.setMilliseconds(0)
-				}
+			'month' => {
+				this.setUTCDate(1)
+				this.setUTCHours(0)
+				this.setUTCMinutes(0)
+				this.setUTCSeconds(0)
+				this.setUTCMilliseconds(0)
+			}
+			'day' => {
+				this.setUTCHours(0)
+				this.setUTCMinutes(0)
+				this.setUTCSeconds(0)
+				this.setUTCMilliseconds(0)
+			}
+			'hour' => {
+				this.setUTCMinutes(0)
+				this.setUTCSeconds(0)
+				this.setUTCMilliseconds(0)
+			}
+			'minute' => {
+				this.setUTCSeconds(0)
+				this.setUTCMilliseconds(0)
+			}
+			'second' => {
+				this.setUTCMilliseconds(0)
+			}
+			'week' => {
+				this.rewind('day', (this.getUTCDay() - 1).mod(7))
+				this.setUTCHours(0)
+				this.setUTCMinutes(0)
+				this.setUTCSeconds(0)
+				this.setUTCMilliseconds(0)
 			}
 		}
 
 		return this
 	} // }}}
+	toString(): String => this.toUTCString()
 }
 
-export Date
+export Date, ParseError

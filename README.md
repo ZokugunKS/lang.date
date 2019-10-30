@@ -9,7 +9,9 @@
 [![CircleCI](https://circleci.com/gh/ZokugunKS/lang.date/tree/master.svg?style=shield)](https://circleci.com/gh/ZokugunKS/lang.date/tree/master)
 [![Coverage Status](https://img.shields.io/coveralls/ZokugunKS/lang.date/master.svg)](https://coveralls.io/github/ZokugunKS/lang.date)
 
-Extends the built-in Date class.
+Extends the built-in Date class to work only on the UTC timezone.
+
+The weeks are defined by the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Week_dates).
 
 Getting Started
 ---------------
@@ -34,7 +36,6 @@ Functions
 - create()
 - getTime()
 - isTime()
-- parse()
 - today()
 - tomorrow()
 - yesterday()
@@ -50,16 +51,12 @@ Methods
 - format()
 - future()
 - futureOrPresent()
+- getEpochTime()
 - getDayOfMonth()
 - getDayOfWeek()
 - getDayOfYear()
 - getDaysInMonth()
 - getDaysInYear()
-- getUTCDayOfMonth()
-- getUTCDayOfWeek()
-- getUTCDayOfYear()
-- getUTCWeek()
-- getUTCYearOfWeek()
 - getWeek()
 - getWeeksInYear()
 - getYearOfWeek()
@@ -76,10 +73,6 @@ Methods
 - setDayOfMonth()
 - setDayOfWeek()
 - setDayOfYear()
-- setUTCDayOfMonth()
-- setUTCDayOfWeek()
-- setUTCDayOfYear()
-- setUTCWeek()
 - setWeek()
 - startOf()
 

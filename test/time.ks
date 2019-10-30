@@ -20,6 +20,6 @@ describe('time', func() {
 	it('getTime', func() { // {{{
 		const d = new Date()
 
-		expect(Date.getTime(d)).to.equal(d.getTime())
+		expect(Date.getTime(d)).to.equal(d.getEpochTime())
 	}) // }}}
 })
