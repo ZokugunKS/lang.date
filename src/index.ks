@@ -1,7 +1,5 @@
 require|import '@zokugun/lang'
 
-extern console
-
 const $months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 const $days = {
 	full: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
@@ -166,7 +164,7 @@ impl Date {
 				return Math.round((date.getEpochTime() - this.getEpochTime()) / 60000)
 			}
 			else if name == 'm' || name == 'month' || name == 'months' {
-				let that := this
+				auto that = this
 				if date.getEpochTime() < this.getEpochTime() {
 					that = date
 					date = this
@@ -219,7 +217,7 @@ impl Date {
 			return Math.round(Math.round((date.getEpochTime() - this.getEpochTime()) / 86400000) / 7)
 		}
 		else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
-			let that := this
+			auto that = this
 			if date.getEpochTime() < this.getEpochTime() {
 				that = date
 				date = this
@@ -350,6 +348,16 @@ impl Date {
 
 		return this
 	} // }}}
+	getDay(): Number => this.getUTCDate()
+	getDayOfMonth(): Number => this.getUTCDate()
+	getDayOfWeek(): Number { // {{{
+		const dw = this.getUTCDay()
+
+		return dw == 0 ? 7 : dw
+	} // }}}
+	getDayOfYear(): Number { // {{{
+		return Math.ceil((this.clone().midnight().getTime() - new Date(this.getYear(), 1, 1).getTime()) / 86400000) + 1
+	} // }}}
 	getDaysInMonth(): Number { // {{{
 		const m = this.getUTCMonth()
 		if m == 1 && this.isLeapYear() {
@@ -360,15 +368,11 @@ impl Date {
 		}
 	} // }}}
 	getDaysInYear(): Number => this.isLeapYear() ? 366 : 365
-	getDayOfMonth(): Number => this.getUTCDate()
-	getDayOfWeek(): Number { // {{{
-		const dw = this.getUTCDay()
-
-		return dw == 0 ? 7 : dw
-	} // }}}
-	getDayOfYear(): Number { // {{{
-		return Math.ceil((this.clone().midnight().getTime() - new Date(this.getYear(), 1, 1).getTime()) / 86400000) + 1
-	} // }}}
+	getHours(): Number => this.getUTCHours()
+	getMilliseconds(): Number => this.getUTCMilliseconds()
+	getMinutes(): Number => this.getUTCMinutes()
+	getMonth(): Number => this.getUTCMonth() + 1
+	getSeconds(): Number => this.getUTCSeconds()
 	getWeek(): Number { // {{{
 		const dw = new Date(this.getYear(), 1, 1).getDayOfWeek() - 1
 		const d = (this.getDayOfYear() + dw) / 7
@@ -447,12 +451,6 @@ impl Date {
 
 		return this.getYear()
 	} // }}}
-	getDay(): Number => this.getUTCDate()
-	getHours(): Number => this.getUTCHours()
-	getMilliseconds(): Number => this.getUTCMilliseconds()
-	getMinutes(): Number => this.getUTCMinutes()
-	getMonth(): Number => this.getUTCMonth() + 1
-	getSeconds(): Number => this.getUTCSeconds()
 	getYear(): Number => this.getUTCFullYear()
 	isAfter(value: Date): Boolean => this.getEpochTime() > value.getEpochTime()
 	isAfter(value): Boolean { // {{{
