@@ -43,8 +43,7 @@ impl Date {
 		create(...args): Date { // {{{
 			if args.length != 0 {
 				if args[0] is NS {
-					#[rules(ignore-misfit)]
-					return new Date(...args!!)
+					return new Date(...args)
 				}
 				else if args[0] is Date {
 					return new Date(args[0])
