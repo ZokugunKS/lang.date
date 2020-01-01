@@ -13,7 +13,6 @@ disclose Date {
 	constructor()
 	constructor(date: Date)
 	constructor(time: Number)
-	toISOString(): String
 
 	internal {
 		constructor(year: NS, month: NS, day: NS = 1, hours: NS = 0, minutes: NS = 0, seconds: NS = 0, milliseconds: NS = 0)
@@ -34,7 +33,7 @@ disclose Date {
 		setUTCMinutes(minutes: Number = -1, seconds: Number = -1, ms: Number = -1): Number
 		setUTCMonth(value: Number, day: Number = -1): Number
 		setUTCSeconds(seconds: Number = -1, ms: Number = -1): Number
-		toUTCString(): String
+		toISOString(): String
 	}
 }
 
@@ -848,7 +847,8 @@ impl Date {
 
 		return this
 	} // }}}
-	toString(): String => this.toUTCString()
+	toString(): String => this.toISOString()
+	toUTCString(): String => this.toISOString()
 }
 
 export Date, ParseError
