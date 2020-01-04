@@ -16,7 +16,6 @@ disclose Date {
 
 	internal {
 		constructor(year: NS, month: NS, day: NS = 1, hours: NS = 0, minutes: NS = 0, seconds: NS = 0, milliseconds: NS = 0)
-		getTime(): Number
 		getTimezoneOffset(): Number
 		getUTCDate(): Number
 		getUTCDay(): Number
@@ -501,6 +500,7 @@ impl Date {
 
 		return (year % 400 == 0) || (year % 4 == 0 && year % 100 != 0)
 	} // }}}
+	isUTC(): Boolean => true
 	midnight(): Date { // {{{
 		this.setHours(0)
 		this.setMinutes(0)
@@ -848,7 +848,6 @@ impl Date {
 		return this
 	} // }}}
 	toString(): String => this.toISOString()
-	toUTCString(): String => this.toISOString()
 }
 
 export Date, ParseError
