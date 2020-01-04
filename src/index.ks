@@ -79,9 +79,10 @@ impl Date {
 		yesterday(): Date => new Date().midnight().add('day', -1)
 	}
 	overwrite constructor(year: NS, month: NS, day: NS = 1, hours: NS = 0, minutes: NS = 0, seconds: NS = 0, milliseconds: NS = 0) { // {{{
-		precursor(year, month - 1, day, hours, minutes, seconds, milliseconds)
+		this()
 
-		this.setUTCMinutes(this.getUTCMinutes() - this.getTimezoneOffset())
+		this.setUTCFullYear(year, month - 1, day)
+		this.setUTCHours(hours, minutes, seconds, milliseconds)
 	} // }}}
 	add(name: String, value: Number): Date { // {{{
 		if name[0] == 'd' && (name == 'd' || name == 'day' || name == 'days') {
