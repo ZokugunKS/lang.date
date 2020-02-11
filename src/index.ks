@@ -9,6 +9,8 @@ const $days = {
 
 type NS = Number | String
 
+extern console
+
 disclose Date {
 	constructor()
 	constructor(date: Date)
@@ -147,7 +149,7 @@ impl Date {
 		return this
 	} // }}}
 	add(name: String, value: String): Date ~ ParseError => this.add(name, value.toInt())
-	difference(name: String, date: Date): Number { // {{{
+	difference(name: String, date: Date): Number? { // {{{
 		if name[0] == 'd' && (name == 'd' || name == 'day' || name == 'days') {
 			return Math.round((date.getEpochTime() - this.getEpochTime()) / 86400000)
 		}
@@ -253,8 +255,10 @@ impl Date {
 
 			return that == this ? d : -d
 		}
+
+		return null
 	} // }}}
-	difference(name: String, ...args): Number => this.difference(name, Date.create(...args))
+	difference(name: String, ...args): Number? => this.difference(name, Date.create(...args))
 	endOf(space: String): Date { // {{{
 		switch space {
 			'year' => {
