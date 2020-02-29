@@ -1,15 +1,163 @@
 require|import '@zokugun/lang'
 
 const $months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-const $days = {
-	full: ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-	abbr: ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']
-	short: ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa']
-}
 
 type NS = Number | String
 
-extern console
+enum DateField {
+	DAY
+	DAY_OF_WEEK
+	DAY_OF_YEAR
+	HOUR
+	MINUTE
+	MILLISECOND
+	MONTH
+	SECOND
+	WEEK
+	YEAR
+	YEAR_OF_WEEK
+
+	static fromString(value: String): DateField ~ ParseError { // {{{
+		switch value[0] {
+			'd' => {
+				if value == 'd' | 'day' {
+					return DateField::DAY
+				}
+				else if value == 'dow' | 'dayofweek' | 'day_of_week' {
+					return DateField::DAY
+				}
+				if value == 'doy' | 'dayofyear' | 'day_of_year' {
+					return DateField::DAY
+				}
+			}
+			'h' => return DateField::HOUR if value == 'h' | 'hour'
+			'm' => {
+				if value == 'ms' | 'millisecond' {
+					return DateField::MILLISECOND
+				}
+				else if value == 'min' | 'minute' {
+					return DateField::MINUTE
+				}
+				else if value == 'm' | 'month' {
+					return DateField::MONTH
+				}
+			}
+			's' => return DateField::SECOND if value == 's' | 'sec' | 'second'
+			'w' => return DateField::WEEK if value == 'w' | 'week'
+			'y' => {
+				if value == 'y' | 'year' {
+					return DateField::YEAR
+				}
+				else if value == 'yow' | 'yearofweek' | 'year_of_week' {
+					return DateField::YEAR
+				}
+			}
+		}
+
+		throw new ParseError(`"\(value)" can't be converted to a DateField`)
+	} // }}}
+}
+
+enum TimeUnit {
+	CENTURIES
+	DAYS
+	DECADES
+	HALF_DAYS
+	HOURS
+	MILLENNIA
+	MILLISECONDS
+	MINUTES
+	MONTHS
+	QUARTERS
+	SECONDS
+	SEMESTERS
+	WEEKS
+	YEARS
+
+	static fromString(value: String): TimeUnit ~ ParseError { // {{{
+		switch value[0] {
+			'c' => return TimeUnit::CENTURIES if value == 'c' | 'century' | 'centuries'
+			'd' => {
+				if value == 'd' | 'day' | 'days' {
+					return TimeUnit::DAYS
+				}
+				else if value == 'dd' | 'decade' | 'decades' {
+					return TimeUnit::DECADES
+				}
+			}
+			'h' => {
+				if value == 'h' | 'hour' | 'hours' {
+					return TimeUnit::HOURS
+				}
+				else if value == 'hd' | 'halfday' | 'halfdays' | 'half_day' | 'half_days' {
+					return TimeUnit::HALF_DAYS
+				}
+			}
+			'm' => {
+				if value == 'ms' | 'millisecond' | 'milliseconds' {
+					return TimeUnit::MILLISECONDS
+				}
+				else if value == 'min' | 'minute' | 'minutes' {
+					return TimeUnit::MINUTES
+				}
+				else if value == 'm' | 'month' | 'months' {
+					return TimeUnit::MONTHS
+				}
+				else if value == 'mil' | 'millennia' {
+					return TimeUnit::MILLENNIA
+				}
+			}
+			'q' => return TimeUnit::QUARTERS if value == 'q' | 'quarter' | 'quarters'
+			's' => {
+				if value == 's' | 'sec' | 'second' | 'seconds' {
+					return TimeUnit::SECONDS
+				}
+				else if value == 'sem' | 'semester' | 'semesters' {
+					return TimeUnit::SEMESTERS
+				}
+			}
+			'w' => return TimeUnit::WEEKS if value == 'w' | 'week' | 'weeks'
+			'y' => return TimeUnit::YEARS if value == 'y' | 'year' | 'years'
+		}
+
+		throw new ParseError(`"\(value)" can't be converted to a TimeUnit`)
+	} // }}}
+}
+
+enum WeekField {
+	SUNDAY
+	MONDAY
+	TUESDAY
+	WEDNESDAY
+	THURSDAY
+	FRIDAY
+	SATURDAY
+
+	static fromString(value: String): WeekField ~ ParseError { // {{{
+		switch value[0] {
+			'f' => return WeekField::FRIDAY if value == 'fr' | 'fri' | 'friday'
+			'm' => return WeekField::MONDAY if value == 'mo' | 'mon' | 'monday'
+			's' => {
+				if value == 'sa' | 'sat' | 'saturday' {
+					return WeekField::SATURDAY
+				}
+				else if value == 'su' | 'sun' | 'sunday' {
+					return WeekField::SUNDAY
+				}
+			}
+			't' => {
+				if value == 'th' | 'thu' | 'thursday' {
+					return WeekField::THURSDAY
+				}
+				else if value == 'tu' | 'tue' | 'tuesday' {
+					return WeekField::TUESDAY
+				}
+			}
+			'w' => return WeekField::WEDNESDAY if value == 'we' | 'wed' | 'wednesday'
+		}
+		throw new ParseError(`"\(value)" can't be converted to a WeekField`)
+	} // }}}
+}
 
 disclose Date {
 	constructor()
@@ -55,7 +203,8 @@ impl Date {
 
 			return new Date()
 		} // }}}
-		getTime(value: Date): Number => value.getEpochTime()
+		getDaysInYear(year: Number): Number => Date.isInLeapYear(year) ? 366 : 365
+		getTime(value: Date): Number => value.getTime()
 		getTime(value: Object): Number { // {{{
 			if value.getEpochTime is Function {
 				return value.getEpochTime()
@@ -71,14 +220,15 @@ impl Date {
 			}
 		} // }}}
 		getTime(value): Number => 0
+		isInLeapYear(year: Number): Boolean => (year % 400 == 0) || (year % 4 == 0 && year % 100 != 0)
 		isTime(value: Date): Boolean => true
 		isTime(value: Object): Boolean { // {{{
 			return value.getEpochTime is Function || value.epochTime is Function || value.getTime is Function || value.time is Function
 		} // }}}
 		isTime(value): Boolean => false
 		today(): Date => new Date().midnight()
-		tomorrow(): Date => new Date().midnight().add('day', 1)
-		yesterday(): Date => new Date().midnight().add('day', -1)
+		tomorrow(): Date => new Date().midnight().plus(TimeUnit::DAYS, 1)
+		yesterday(): Date => new Date().midnight().minus(TimeUnit::DAYS, 1)
 	}
 	overwrite constructor(year: NS, month: NS, day: NS = 1, hours: NS = 0, minutes: NS = 0, seconds: NS = 0, milliseconds: NS = 0) { // {{{
 		this()
@@ -86,86 +236,36 @@ impl Date {
 		this.setUTCFullYear(year, month - 1, day)
 		this.setUTCHours(hours, minutes, seconds, milliseconds)
 	} // }}}
-	add(name: String, value: Number): Date { // {{{
-		if name[0] == 'd' && (name == 'd' || name == 'day' || name == 'days') {
-			this.setUTCDate(this.getUTCDate() + value)
-		}
-		else if name[0] == 'h' && (name == 'h' || name == 'hour' || name == 'hours') {
-			this.setUTCHours(this.getUTCHours() + value)
-		}
-		else if name[0] == 'm' {
-			if name == 'ms' || name == 'millisecond' || name == 'milliseconds' {
-				this.setUTCMilliseconds(this.getUTCMilliseconds() + value)
+	difference(unit: TimeUnit, date: Date): Number { // {{{
+		switch unit {
+			TimeUnit::CENTURIES		=> {
+				return this.difference(TimeUnit::YEARS, date) /. 100
 			}
-			else if name == 'mn' || name == 'minute' || name == 'minutes' {
-				this.setUTCMinutes(this.getUTCMinutes() + value)
+			TimeUnit::DAYS			=> {
+				return (date.getTime() - this.getTime()) /. 86400000
 			}
-			else if name == 'm' || name == 'month' || name == 'months' {
-				this.setUTCMonth(this.getUTCMonth() + value)
+			TimeUnit::DECADES		=> {
+				return this.difference(TimeUnit::YEARS, date) /. 10
 			}
-		}
-		else if name[0] == 's' && (name == 's' || name == 'second' || name == 'seconds') {
-			this.setUTCSeconds(this.getUTCSeconds() + value)
-		}
-		else if name[0] == 'w' && (name == 'w' || name == 'week' || name == 'weeks') {
-			this.setUTCDate(this.getUTCDate() + (value * 7))
-		}
-		else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
-			this.setUTCFullYear(this.getUTCFullYear() + value)
-		}
-
-		return this
-	} // }}}
-	add(properties: Dictionary): Date ~ ParseError { // {{{
-		for const property: NS, name of properties {
-			if name[0] == 'd' && (name == 'd' || name == 'day' || name == 'days') {
-				this.setUTCDate(this.getUTCDate() + property.toInt())
+			TimeUnit::HALF_DAYS		=> {
+				return (date.getTime() - this.getTime()) /. 3600000 /. 12
 			}
-			else if name[0] == 'h' && (name == 'h' || name == 'hour' || name == 'hours') {
-				this.setUTCHours(this.getUTCHours() + property.toInt())
+			TimeUnit::HOURS			=> {
+				return (date.getTime() - this.getTime()) /. 3600000
 			}
-			else if name[0] == 'm' {
-				if name == 'ms' || name == 'millisecond' || name == 'milliseconds' {
-					this.setUTCMilliseconds(this.getUTCMilliseconds() + property.toInt())
-				}
-				else if name == 'mn' || name == 'minute' || name == 'minutes' {
-					this.setUTCMinutes(this.getUTCMinutes() + property.toInt())
-				}
-				else if name == 'm' || name == 'month' || name == 'months' {
-					this.setUTCMonth(this.getUTCMonth() + property.toInt())
-				}
+			TimeUnit::MILLENNIA		=> {
+				return this.difference(TimeUnit::YEARS, date) /. 1_000
 			}
-			else if name[0] == 's' && (name == 's' || name == 'second' || name == 'seconds') {
-				this.setUTCSeconds(this.getUTCSeconds() + property.toInt())
+			TimeUnit::MILLISECONDS	=> {
+				return date.getTime() - this.getTime()
 			}
-			else if name[0] == 'w' && (name == 'w' || name == 'week' || name == 'weeks') {
-				this.setUTCDate(this.getUTCDate() + (property.toInt() * 7))
+			TimeUnit::MINUTES		=> {
+				return (date.getTime() - this.getTime()) /. 60000
 			}
-			else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
-				this.setUTCFullYear(this.getUTCFullYear() + property.toInt())
-			}
-		}
-
-		return this
-	} // }}}
-	add(name: String, value: String): Date ~ ParseError => this.add(name, value.toInt())
-	difference(name: String, date: Date): Number? { // {{{
-		if name[0] == 'd' && (name == 'd' || name == 'day' || name == 'days') {
-			return Math.round((date.getEpochTime() - this.getEpochTime()) / 86400000)
-		}
-		else if name[0] == 'h' && (name == 'h' || name == 'hour' || name == 'hours') {
-			return Math.round((date.getEpochTime() - this.getEpochTime()) / 3600000)
-		}
-		else if name[0] == 'm' {
-			if name == 'ms' || name == 'millisecond' || name == 'milliseconds' {
-				return date.getEpochTime() - this.getEpochTime()
-			}
-			else if name == 'mn' || name == 'minute' || name == 'minutes' {
-				return Math.round((date.getEpochTime() - this.getEpochTime()) / 60000)
-			}
-			else if name == 'm' || name == 'month' || name == 'months' {
+			TimeUnit::MONTHS		=> {
 				auto that = this
-				if date.getEpochTime() < this.getEpochTime() {
+
+				if date.getTime() < this.getTime() {
 					that = date
 					date = this
 				}
@@ -176,19 +276,19 @@ impl Date {
 					d += (date.getYear() - that.getYear() - 1) * 12
 				}
 
-				if date.getDayOfMonth() > that.getDayOfMonth() {
+				if date.getDay() > that.getDay() {
 					++d
 				}
-				else if date.getDayOfMonth() == that.getDayOfMonth() {
-					if date.getHours() > that.getHours() {
+				else if date.getDay() == that.getDay() {
+					if date.getHour() > that.getHour() {
 						++d
 					}
-					else if date.getHours() == that.getHours() {
-						if date.getMinutes() > that.getMinutes() {
+					else if date.getHour() == that.getHour() {
+						if date.getMinute() > that.getMinute() {
 							++d
 						}
-						else if date.getMinutes() == that.getMinutes() {
-							if date.getSeconds() > that.getSeconds() || (date.getSeconds() == that.getSeconds() && date.getMilliseconds() >= that.getMilliseconds()) {
+						else if date.getMinute() == that.getMinute() {
+							if date.getSecond() > that.getSecond() || (date.getSecond() == that.getSecond() && date.getMillisecond() >= that.getMillisecond()) {
 								++d
 							}
 						}
@@ -201,67 +301,68 @@ impl Date {
 
 				return that == this ? d : -d
 			}
-		}
-		else if name[0] == 'q' && (name == 'q' || name == 'quarter' || name == 'quarters') {
-			return Math.round(this.difference('month', date) / 3)
-		}
-		else if name[0] == 's' {
-			if name == 's' || name == 'second' || name == 'seconds' {
-				return Math.round((date.getEpochTime() - this.getEpochTime()) / 1000)
+			TimeUnit::QUARTERS		=> {
+				return this.difference(TimeUnit::MONTHS, date) /. 3
 			}
-			else if name == 'sm' || name == 'semester' || name == 'semesters' {
-				return Math.round(this.difference('month', date) / 6)
+			TimeUnit::SECONDS		=> {
+				return (date.getTime() - this.getTime()) /. 1000
 			}
-		}
-		else if name[0] == 'w' && (name == 'w' || name == 'week' || name == 'weeks') {
-			return Math.round(Math.round((date.getEpochTime() - this.getEpochTime()) / 86400000) / 7)
-		}
-		else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
-			auto that = this
-			if date.getEpochTime() < this.getEpochTime() {
-				that = date
-				date = this
+			TimeUnit::SEMESTERS		=> {
+				return this.difference(TimeUnit::MONTHS, date) /. 6
 			}
+			TimeUnit::WEEKS			=> {
+				return (date.getTime() - this.getTime()) /. 86400000 /. 7
+			}
+			TimeUnit::YEARS			=> {
+				auto that = this
 
-			let d = date.getYear() - that.getYear() - 2
+				if date.getTime() < this.getTime() {
+					that = date
+					date = this
+				}
 
-			if date.getMonth() > that.getMonth() {
-				++d
-			}
-			else if date.getMonth() == that.getMonth() {
-				if date.getDayOfMonth() > that.getDayOfMonth() {
+				let d = date.getYear() - that.getYear() - 2
+
+				if date.getMonth() > that.getMonth() {
 					++d
 				}
-				else if date.getDayOfMonth() == that.getDayOfMonth() {
-					if date.getHours() > that.getHours() {
+				else if date.getMonth() == that.getMonth() {
+					if date.getDay() > that.getDay() {
 						++d
 					}
-					else if date.getHours() == that.getHours() {
-						if date.getMinutes() > that.getMinutes() {
+					else if date.getDay() == that.getDay() {
+						if date.getHour() > that.getHour() {
 							++d
 						}
-						else if date.getMinutes() == that.getMinutes() {
-							if date.getSeconds() > that.getSeconds() || (date.getSeconds() == that.getSeconds() && date.getMilliseconds() >= that.getMilliseconds()) {
+						else if date.getHour() == that.getHour() {
+							if date.getMinute() > that.getMinute() {
 								++d
+							}
+							else if date.getMinute() == that.getMinute() {
+								if date.getSecond() > that.getSecond() || (date.getSecond() == that.getSecond() && date.getMillisecond() >= that.getMillisecond()) {
+									++d
+								}
 							}
 						}
 					}
 				}
-			}
 
-			if d < 0 {
-				d = 0
-			}
+				if d < 0 {
+					d = 0
+				}
 
-			return that == this ? d : -d
+				return that == this ? d : -d
+			}
 		}
 
-		return null
+		return 0
 	} // }}}
-	difference(name: String, ...args): Number? => this.difference(name, Date.create(...args))
-	endOf(space: String): Date { // {{{
-		switch space {
-			'year' => {
+	difference(unit: TimeUnit, ...args): Number => this.difference(unit, Date.create(...args))
+	difference(unit: String, date: Date): Number ~ ParseError => this.difference(TimeUnit.fromString(unit), date)
+	difference(unit: String, ...args): Number ~ ParseError => this.difference(TimeUnit.fromString(unit), Date.create(...args))
+	endOf(field: DateField): this { // {{{
+		switch field {
+			DateField::YEAR => {
 				this.setUTCMonth(11)
 				this.setUTCDate(this.getDaysInMonth())
 				this.setUTCHours(23)
@@ -269,89 +370,61 @@ impl Date {
 				this.setUTCSeconds(59)
 				this.setUTCMilliseconds(999)
 			}
-			'month' => {
+			DateField::MONTH => {
 				this.setUTCDate(this.getDaysInMonth())
 				this.setUTCHours(23)
 				this.setUTCMinutes(59)
 				this.setUTCSeconds(59)
 				this.setUTCMilliseconds(999)
 			}
-			'day' => {
+			DateField::DAY => {
 				this.setUTCHours(23)
 				this.setUTCMinutes(59)
 				this.setUTCSeconds(59)
 				this.setUTCMilliseconds(999)
 			}
-			'hour' => {
+			DateField::HOUR => {
 				this.setUTCMinutes(59)
 				this.setUTCSeconds(59)
 				this.setUTCMilliseconds(999)
 			}
-			'minute' => {
+			DateField::MINUTE => {
 				this.setUTCSeconds(59)
 				this.setUTCMilliseconds(999)
 			}
-			'second' => {
+			DateField::SECOND => {
 				this.setUTCMilliseconds(999)
 			}
-			'week' => {
-				this.add('day', 6 - (this.getUTCDay() - 1).mod(7))
+			DateField::WEEK => {
+				this.plusDays(6 - (this.getUTCDay() - 1).mod(7))
 				this.setUTCHours(23)
 				this.setUTCMinutes(59)
 				this.setUTCSeconds(59)
 				this.setUTCMilliseconds(999)
 			}
 		}
-
-		return this
 	} // }}}
-	future(value: String): Date { // {{{
-		value = value.toLowerCase()
-
-		let index: Number
-		if value.length == 2 {
-			index = $days.short.indexOf(value)
-		}
-		else if value.length == 3 {
-			index = $days.abbr.indexOf(value)
-		}
-		else {
-			index = $days.full.indexOf(value)
-		}
-
+	endOf(field: String): this ~ ParseError => this.endOf(DateField.fromString(field))
+	future(field: WeekField): this { // {{{
 		const dw = this.getDayOfWeek()
-		if dw == index {
-			this.add('day', 7)
+
+		if dw == field {
+			this.plusDays(7)
 		}
 		else {
-			this.add('day', index < dw ? index + 7 - dw : index - dw)
+			this.plusDays(field < dw ? field + 7 - dw : field - dw)
 		}
-
-		return this
 	} // }}}
-	futureOrPresent(value: String): Date { // {{{
-		value = value.toLowerCase()
-
-		let index: Number
-		if value.length == 2 {
-			index = $days.short.indexOf(value)
-		}
-		else if value.length == 3 {
-			index = $days.abbr.indexOf(value)
-		}
-		else {
-			index = $days.full.indexOf(value)
-		}
-
+	future(field: String): this ~ ParseError => this.future(WeekField.fromString(field))
+	futureOrPresent(field: WeekField): this { // {{{
 		const dw = this.getDayOfWeek()
-		if dw != index {
-			this.add('day', index < dw ? index + 7 - dw : index - dw)
-		}
 
-		return this
+		if dw != field {
+			this.plusDays(field < dw ? field + 7 - dw : field - dw)
+		}
 	} // }}}
+	futureOrPresent(field: String): this ~ ParseError => this.futureOrPresent(WeekField.fromString(field))
 	getDay(): Number => this.getUTCDate()
-	getDayOfMonth(): Number => this.getUTCDate()
 	getDayOfWeek(): Number { // {{{
 		const dw = this.getUTCDay()
 
@@ -361,20 +434,20 @@ impl Date {
 		return Math.ceil((this.clone().midnight().getTime() - new Date(this.getYear(), 1, 1).getTime()) / 86400000) + 1
 	} // }}}
 	getDaysInMonth(): Number { // {{{
-		const m = this.getUTCMonth()
-		if m == 1 && this.isLeapYear() {
+		const m = this.getMonth()
+		if m == 2 && this.isInLeapYear() {
 			return 29
 		}
 		else {
-			return $months[m]
+			return $months[m - 1]
 		}
 	} // }}}
-	getDaysInYear(): Number => this.isLeapYear() ? 366 : 365
-	getHours(): Number => this.getUTCHours()
-	getMilliseconds(): Number => this.getUTCMilliseconds()
-	getMinutes(): Number => this.getUTCMinutes()
+	getDaysInYear(): Number => Date.getDaysInYear(this.getYear())
+	getHour(): Number => this.getUTCHours()
+	getMillisecond(): Number => this.getUTCMilliseconds()
+	getMinute(): Number => this.getUTCMinutes()
 	getMonth(): Number => this.getUTCMonth() + 1
-	getSeconds(): Number => this.getUTCSeconds()
+	getSecond(): Number => this.getUTCSeconds()
 	getWeek(): Number { // {{{
 		const dw = new Date(this.getYear(), 1, 1).getDayOfWeek() - 1
 		const d = (this.getDayOfYear() + dw) / 7
@@ -454,29 +527,29 @@ impl Date {
 		return this.getYear()
 	} // }}}
 	getYear(): Number => this.getUTCFullYear()
-	isAfter(value: Date): Boolean => this.getEpochTime() > value.getEpochTime()
+	isAfter(value: Date): Boolean => this.getTime() > value.getTime()
 	isAfter(value): Boolean { // {{{
-		const time = Date.isTime(value) ? Date.getTime(value) : Date.create(value).getEpochTime()
+		const time = Date.isTime(value) ? Date.getTime(value) : Date.create(value).getTime()
 
-		return this.getEpochTime() > time
+		return this.getTime() > time
 	} // }}}
 	isAfter(...args): Boolean => this.isAfter(Date.create(...args))
-	isBefore(value: Date): Boolean => this.getEpochTime() < value.getEpochTime()
+	isBefore(value: Date): Boolean => this.getTime() < value.getTime()
 	isBefore(value): Boolean { // {{{
-		const time = Date.isTime(value) ? Date.getTime(value) : Date.create(value).getEpochTime()
+		const time = Date.isTime(value) ? Date.getTime(value) : Date.create(value).getTime()
 
-		return this.getEpochTime() < time
+		return this.getTime() < time
 	} // }}}
 	isBefore(...args): Boolean => this.isBefore(Date.create(...args))
 	isBetween(value1: Date, value2: Date): Boolean { // {{{
-		const time1 = value1.getEpochTime()
-		const time2 = value2.getEpochTime()
+		const time1 = value1.getTime()
+		const time2 = value2.getTime()
 
 		if time1 > time2 {
-			return time2 <= this.getEpochTime() <= time1
+			return time2 <= this.getTime() <= time1
 		}
 		else {
-			return time1 <= this.getEpochTime() <= time2
+			return time1 <= this.getTime() <= time2
 		}
 	} // }}}
 	isBetween(value1, value2): Boolean { // {{{
@@ -484,254 +557,226 @@ impl Date {
 			value1 = Date.getTime(value1)
 		}
 		else {
-			value1 = Date.create(value1).getEpochTime()
+			value1 = Date.create(value1).getTime()
 		}
 		if Date.isTime(value2) {
 			value2 = Date.getTime(value2)
 		}
 		else {
-			value2 = Date.create(value2).getEpochTime()
+			value2 = Date.create(value2).getTime()
 		}
 
 		if value1 > value2 {
-			return value2 <= this.getEpochTime() <= value1
+			return value2 <= this.getTime() <= value1
 		}
 		else {
-			return value1 <= this.getEpochTime() <= value2
+			return value1 <= this.getTime() <= value2
 		}
 	} // }}}
-	isLeapYear(): Boolean { // {{{
-		const year = this.getUTCFullYear()
-
-		return (year % 400 == 0) || (year % 4 == 0 && year % 100 != 0)
-	} // }}}
+	isInLeapYear(): Boolean => Date.isInLeapYear(this.getUTCFullYear())
 	isUTC(): Boolean => true
-	midnight(): Date { // {{{
-		this.setHours(0)
-		this.setMinutes(0)
-		this.setSeconds(0)
-		this.setMilliseconds(0)
-
-		return this
+	midnight(): this { // {{{
+		this.setHour(0)
+		this.setMinute(0)
+		this.setSecond(0)
+		this.setMillisecond(0)
 	} // }}}
-	noon(): Date { // {{{
-		this.setUTCHours(12)
-		this.setUTCMinutes(0)
-		this.setUTCSeconds(0)
-		this.setUTCMilliseconds(0)
-
-		return this
+	minus(unit: TimeUnit, value: Number): this { // {{{
+		switch unit {
+			TimeUnit::CENTURIES		=> this.setUTCFullYear(this.getUTCFullYear() - (value * 100))
+			TimeUnit::DAYS			=> this.setUTCDate(this.getUTCDate() - value)
+			TimeUnit::DECADES		=> this.setUTCFullYear(this.getUTCFullYear() - (value * 10))
+			TimeUnit::HALF_DAYS		=> this.setUTCHours(this.getUTCHours() - (value * 12))
+			TimeUnit::HOURS			=> this.setUTCHours(this.getUTCHours() - value)
+			TimeUnit::MILLENNIA		=> this.setUTCFullYear(this.getUTCFullYear() - (value * 1_000))
+			TimeUnit::MILLISECONDS	=> this.setUTCMilliseconds(this.getUTCMilliseconds() - value)
+			TimeUnit::MINUTES		=> this.setUTCMinutes(this.getUTCMinutes() - value)
+			TimeUnit::MONTHS		=> this.setUTCMonth(this.getUTCMonth() - value)
+			TimeUnit::QUARTERS		=> this.setUTCMonth(this.getUTCMonth() - (value * 3))
+			TimeUnit::SECONDS		=> this.setUTCSeconds(this.getUTCSeconds() - value)
+			TimeUnit::SEMESTERS		=> this.setUTCMonth(this.getUTCMonth() - (value * 6))
+			TimeUnit::WEEKS			=> this.setUTCDate(this.getUTCDate() - (value * 7))
+			TimeUnit::YEARS			=> this.setUTCFullYear(this.getUTCFullYear() - value)
+		}
 	} // }}}
-	past(value: String): Date { // {{{
-		value = value.toLowerCase()
-
-		let index: Number
-		if value.length == 2 {
-			index = $days.short.indexOf(value)
+	minus(unit: TimeUnit, value: String): this ~ ParseError => this.minus(unit, value.toInt())
+	minus(unit: String, value: Number): this ~ ParseError => this.minus(TimeUnit.fromString(unit), value)
+	minus(unit: String, value: String): this ~ ParseError => this.minus(TimeUnit.fromString(unit), value.toInt())
+	minus(properties: Dictionary<NS>): this ~ ParseError { // {{{
+		for const value, unit of properties {
+			this.minus(unit, value)
 		}
-		else if value.length == 3 {
-			index = $days.abbr.indexOf(value)
-		}
-		else {
-			index = $days.full.indexOf(value)
-		}
-
+	} // }}}
+	minusDays(value: Number): this { // {{{
+		this.setUTCDate(this.getUTCDate() - value)
+	} // }}}
+	minusDays(value: String): this ~ ParseError => this.minusDays(value.toInt())
+	minusHours(value: Number): this { // {{{
+		this.setUTCHours(this.getUTCHours() - value)
+	} // }}}
+	minusHours(value: String): this ~ ParseError => this.minusHours(value.toInt())
+	minusMilliseconds(value: Number): this { // {{{
+		this.setUTCMilliseconds(this.getUTCMilliseconds() - value)
+	} // }}}
+	minusMilliseconds(value: String): this ~ ParseError => this.minusMilliseconds(value.toInt())
+	minusMinutes(value: Number): this { // {{{
+		this.setUTCMinutes(this.getUTCMinutes() - value)
+	} // }}}
+	minusMinutes(value: String): this ~ ParseError => this.minusMinutes(value.toInt())
+	minusMonths(value: Number): this { // {{{
+		this.setUTCMonth(this.getUTCMonth() - value)
+	} // }}}
+	minusMonths(value: String): this ~ ParseError => this.minusMonths(value.toInt())
+	minusSeconds(value: Number): this { // {{{
+		this.setUTCSeconds(this.getUTCSeconds() - value)
+	} // }}}
+	minusSeconds(value: String): this ~ ParseError => this.minusSeconds(value.toInt())
+	minusWeeks(value: Number): this { // {{{
+		this.setUTCDate(this.getUTCDate() - (value * 7))
+	} // }}}
+	minusWeeks(value: String): this ~ ParseError => this.minusWeeks(value.toInt())
+	minusYears(value: Number): this { // {{{
+		this.setUTCFullYear(this.getUTCFullYear() - value)
+	} // }}}
+	minusYears(value: String): this ~ ParseError => this.minusYears(value.toInt())
+	noon(): this { // {{{
+		this.setHour(12)
+		this.setMinute(0)
+		this.setSecond(0)
+		this.setMillisecond(0)
+	} // }}}
+	past(field: WeekField): this { // {{{
 		const dw = this.getDayOfWeek()
-		if dw == index {
-			this.rewind('day', 7)
+
+		if dw == field {
+			this.minusDays(7)
 		}
 		else {
-			this.rewind('day',  dw < index ? dw + 7 - index : dw - index)
+			this.minusDays(dw < field ? dw + 7 - field : dw - field)
 		}
-
-		return this
 	} // }}}
-	pastOrPresent(value: String): Date { // {{{
-		value = value.toLowerCase()
-
-		let index: Number
-		if value.length == 2 {
-			index = $days.short.indexOf(value)
-		}
-		else if value.length == 3 {
-			index = $days.abbr.indexOf(value)
-		}
-		else {
-			index = $days.full.indexOf(value)
-		}
-
+	past(field: String): this ~ ParseError => this.past(WeekField.fromString(field))
+	pastOrPresent(field: WeekField): this { // {{{
 		const dw = this.getDayOfWeek()
-		if dw != index {
-			this.rewind('day',  dw < index ? dw + 7 - index : dw - index)
-		}
 
-		return this
+		if dw != field {
+			this.minusDays(dw < field ? dw + 7 - field : dw - field)
+		}
 	} // }}}
-	rewind(properties: Dictionary): Date ~ ParseError { // {{{
-		for const property: NS, name of properties {
-			if name[0] == 'd' && (name == 'd' || name == 'day' || name == 'days') {
-				this.setUTCDate(this.getUTCDate() - property.toInt())
-			}
-			else if name[0] == 'h' && (name == 'h' || name == 'hour' || name == 'hours') {
-				this.setUTCHours(this.getUTCHours() - property.toInt())
-			}
-			else if name[0] == 'm' {
-				if name == 'ms' || name == 'millisecond' || name == 'milliseconds' {
-					this.setUTCMilliseconds(this.getUTCMilliseconds() - property.toInt())
-				}
-				else if name == 'mn' || name == 'minute' || name == 'minutes' {
-					this.setUTCMinutes(this.getUTCMinutes() - property.toInt())
-				}
-				else if name == 'm' || name == 'month' || name == 'months' {
-					this.setUTCMonth(this.getUTCMonth() - property.toInt())
-				}
-			}
-			else if name[0] == 's' && (name == 's' || name == 'second' || name == 'seconds') {
-				this.setUTCSeconds(this.getUTCSeconds() - property.toInt())
-			}
-			else if name[0] == 'w' && (name == 'w' || name == 'week' || name == 'weeks') {
-				this.setUTCDate(this.getUTCDate() - (property.toInt() * 7))
-			}
-			else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
-				this.setUTCFullYear(this.getUTCFullYear() - property.toInt())
-			}
+	pastOrPresent(field: String): this ~ ParseError => this.pastOrPresent(WeekField.fromString(field))
+	plus(unit: TimeUnit, value: Number): this { // {{{
+		switch unit {
+			TimeUnit::CENTURIES		=> this.setUTCFullYear(this.getUTCFullYear() + (value * 100))
+			TimeUnit::DAYS			=> this.setUTCDate(this.getUTCDate() + value)
+			TimeUnit::DECADES		=> this.setUTCFullYear(this.getUTCFullYear() + (value * 10))
+			TimeUnit::HALF_DAYS		=> this.setUTCHours(this.getUTCHours() + (value * 12))
+			TimeUnit::HOURS			=> this.setUTCHours(this.getUTCHours() + value)
+			TimeUnit::MILLENNIA		=> this.setUTCFullYear(this.getUTCFullYear() + (value * 1_000))
+			TimeUnit::MILLISECONDS	=> this.setUTCMilliseconds(this.getUTCMilliseconds() + value)
+			TimeUnit::MINUTES		=> this.setUTCMinutes(this.getUTCMinutes() + value)
+			TimeUnit::MONTHS		=> this.setUTCMonth(this.getUTCMonth() + value)
+			TimeUnit::QUARTERS		=> this.setUTCMonth(this.getUTCMonth() + (value * 3))
+			TimeUnit::SECONDS		=> this.setUTCSeconds(this.getUTCSeconds() + value)
+			TimeUnit::SEMESTERS		=> this.setUTCMonth(this.getUTCMonth() + (value * 6))
+			TimeUnit::WEEKS			=> this.setUTCDate(this.getUTCDate() + (value * 7))
+			TimeUnit::YEARS			=> this.setUTCFullYear(this.getUTCFullYear() + value)
 		}
-
-		return this
 	} // }}}
-	rewind(name: String, value: Number): Date { // {{{
-		if name[0] == 'd' && (name == 'd' || name == 'day' || name == 'days') {
-			this.setUTCDate(this.getUTCDate() - value)
+	plus(unit: TimeUnit, value: String): this ~ ParseError => this.plus(unit, value.toInt())
+	plus(unit: String, value: Number): this ~ ParseError => this.plus(TimeUnit.fromString(unit), value)
+	plus(unit: String, value: String): this ~ ParseError => this.plus(TimeUnit.fromString(unit), value.toInt())
+	plus(properties: Dictionary<NS>): this ~ ParseError { // {{{
+		for const value, unit of properties {
+			this.plus(unit, value)
 		}
-		else if name[0] == 'h' && (name == 'h' || name == 'hour' || name == 'hours') {
-			this.setUTCHours(this.getUTCHours() - value)
-		}
-		else if name[0] == 'm' {
-			if name == 'ms' || name == 'millisecond' || name == 'milliseconds' {
-				this.setUTCMilliseconds(this.getUTCMilliseconds() - value)
-			}
-			else if name == 'mn' || name == 'minute' || name == 'minutes' {
-				this.setUTCMinutes(this.getUTCMinutes() - value)
-			}
-			else if name == 'm' || name == 'month' || name == 'months' {
-				this.setUTCMonth(this.getUTCMonth() - value)
-			}
-		}
-		else if name[0] == 's' && (name == 's' || name == 'second' || name == 'seconds') {
-			this.setUTCSeconds(this.getUTCSeconds() - value)
-		}
-		else if name[0] == 'w' && (name == 'w' || name == 'week' || name == 'weeks') {
-			this.setUTCDate(this.getUTCDate() - (value * 7))
-		}
-		else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
-			this.setUTCFullYear(this.getUTCFullYear() - value)
-		}
-
-		return this
 	} // }}}
-	rewind(name: String, value: String): Date ~ ParseError => this.rewind(name, value.toInt())
-	set(properties: Dictionary): Date ~ ParseError { // {{{
-		for const property: NS, name of properties {
-			if name[0] == 'd' {
-				if name == 'd' || name == 'day' || name == 'dayofmonth' {
-					this.setUTCDate(property.toInt())
-				}
-				else if name == 'dw' || name == 'dayofweek' {
-					this.setDayOfWeek(property.toInt())
-				}
-				else if name == 'dy' || name == 'dayofyear' {
-					this.setDayOfYear(property.toInt())
-				}
-			}
-			else if name[0] == 'h' && (name == 'h' || name == 'hour' || name == 'hours') {
-				this.setUTCHours(property.toInt())
-			}
-			else if name[0] == 'm' {
-				if name == 'ms' || name == 'millisecond' || name == 'milliseconds' {
-					this.setUTCMilliseconds(property.toInt())
-				}
-				else if name == 'mn' || name == 'minute' || name == 'minutes' {
-					this.setUTCMinutes(property.toInt())
-				}
-				else if name == 'm' || name == 'month' || name == 'months' {
-					this.setUTCMonth(property.toInt() - 1)
-				}
-			}
-			else if name[0] == 's' && (name == 's' || name == 'second' || name == 'seconds') {
-				this.setUTCSeconds(property.toInt())
-			}
-			else if name[0] == 'w' && (name == 'w' || name == 'week' || name == 'weeks') {
-				this.setWeek(property.toInt())
-			}
-			else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
-				this.setUTCFullYear(property.toInt())
-			}
-		}
-
-		return this
+	plusDays(value: Number): this { // {{{
+		this.setUTCDate(this.getUTCDate() + value)
 	} // }}}
-	set(name: String, value: Number): Date { // {{{
-		if name[0] == 'd' {
-			if name == 'd' || name == 'day' || name == 'dayofmonth' {
+	plusDays(value: String): this ~ ParseError => this.plusDays(value.toInt())
+	plusHours(value: Number): this { // {{{
+		this.setUTCHours(this.getUTCHours() + value)
+	} // }}}
+	plusHours(value: String): this ~ ParseError => this.plusHours(value.toInt())
+	plusMilliseconds(value: Number): this { // {{{
+		this.setUTCMilliseconds(this.getUTCMilliseconds() + value)
+	} // }}}
+	plusMilliseconds(value: String): this ~ ParseError => this.plusMilliseconds(value.toInt())
+	plusMinutes(value: Number): this { // {{{
+		this.setUTCMinutes(this.getUTCMinutes() + value)
+	} // }}}
+	plusMinutes(value: String): this ~ ParseError => this.plusMinutes(value.toInt())
+	plusMonths(value: Number): this { // {{{
+		this.setUTCMonth(this.getUTCMonth() + value)
+	} // }}}
+	plusMonths(value: String): this ~ ParseError => this.plusMonths(value.toInt())
+	plusSeconds(value: Number): this { // {{{
+		this.setUTCSeconds(this.getUTCSeconds() + value)
+	} // }}}
+	plusSeconds(value: String): this ~ ParseError => this.plusSeconds(value.toInt())
+	plusWeeks(value: Number): this { // {{{
+		this.setUTCDate(this.getUTCDate() + (value * 7))
+	} // }}}
+	plusWeeks(value: String): this ~ ParseError => this.plusWeeks(value.toInt())
+	plusYears(value: Number): this { // {{{
+		this.setUTCFullYear(this.getUTCFullYear() + value)
+	} // }}}
+	plusYears(value: String): this ~ ParseError => this.plusYears(value.toInt())
+	set(field: DateField, value: Number): this { // {{{
+		switch field {
+			DateField::DAY => {
 				this.setUTCDate(value)
 			}
-			else if name == 'dw' || name == 'dayofweek' {
+			DateField::DAY_OF_WEEK => {
 				this.setDayOfWeek(value)
 			}
-			else if name == 'dy' || name == 'dayofyear' {
+			DateField::DAY_OF_YEAR => {
 				this.setDayOfYear(value)
 			}
-		}
-		else if name[0] == 'h' && (name == 'h' || name == 'hour' || name == 'hours') {
-			this.setUTCHours(value)
-		}
-		else if name[0] == 'm' {
-			if name == 'ms' || name == 'millisecond' || name == 'milliseconds' {
-				this.setUTCMilliseconds(value)
+			DateField::HOUR => {
+				this.setUTCHours(value)
 			}
-			else if name == 'mn' || name == 'minute' || name == 'minutes' {
-				this.setUTCMinutes(value)
-			}
-			else if name == 'm' || name == 'month' || name == 'months' {
+			DateField::MONTH => {
 				this.setUTCMonth(value - 1)
 			}
+			DateField::MILLISECOND => {
+				this.setUTCMilliseconds(value)
+			}
+			DateField::MINUTE => {
+				this.setUTCMinutes(value)
+			}
+			DateField::SECOND => {
+				this.setUTCSeconds(value)
+			}
+			DateField::WEEK => {
+				this.setWeek(value)
+			}
+			DateField::YEAR => {
+				this.setUTCFullYear(value)
+			}
 		}
-		else if name[0] == 's' && (name == 's' || name == 'second' || name == 'seconds') {
-			this.setUTCSeconds(value)
-		}
-		else if name[0] == 'w' && (name == 'w' || name == 'week' || name == 'weeks') {
-			this.setWeek(value)
-		}
-		else if name[0] == 'y' && (name == 'y' || name == 'year' || name == 'years') {
-			this.setUTCFullYear(value)
-		}
-
-		return this
 	} // }}}
-	set(name: String, value: String): Date ~ ParseError => this.set(name, value.toInt())
-	setDay(value: Number): Date { // {{{
+	set(field: DateField, value: String): this ~ ParseError => this.set(field, value.toInt())
+	set(field: String, value: Number): this ~ ParseError => this.set(DateField.fromString(field), value)
+	set(field: String, value: String): this ~ ParseError => this.set(DateField.fromString(field), value.toInt())
+	set(properties: Dictionary<NS>): this ~ ParseError { // {{{
+		for const value, field of properties {
+			this.set(field, value)
+		}
+	} // }}}
+	setDay(value: Number): this { // {{{
 		this.setUTCDate(value)
-
-		return this
 	} // }}}
-	setDay(value: String): Date ~ ParseError => this.setDay(value.toInt())
-	setDayOfMonth(value: Number): Date { // {{{
-		this.setUTCDate(value)
-
-		return this
+	setDay(value: String): this ~ ParseError => this.setDay(value.toInt())
+	setDayOfWeek(value: Number): this { // {{{
+		this.plusDays(value - this.getDayOfWeek())
 	} // }}}
-	setDayOfMonth(value: String): Date ~ ParseError => this.setDayOfMonth(value.toInt())
-	setDayOfWeek(value: Number): Date { // {{{
-		this.add('day', value - this.getDayOfWeek())
-
-		return this
-	} // }}}
-	setDayOfWeek(value: String): Date ~ ParseError => this.setDayOfWeek(value.toInt())
-	setDayOfYear(value: Number): Date { // {{{
+	setDayOfWeek(value: String): this ~ ParseError => this.setDayOfWeek(value.toInt())
+	setDayOfYear(value: Number): this { // {{{
 		let m = 0
 		for const i from 0 til 12 {
 			if i == 1 {
-				if this.isLeapYear() {
+				if this.isInLeapYear() {
 					if value > $months[i] + 1 {
 						m++
 						value -= $months[i] + 1
@@ -754,61 +799,46 @@ impl Date {
 
 		this.setMonth(m)
 		this.setDay(value)
-
-		return this
 	} // }}}
-	setDayOfYear(value: String): Date ~ ParseError => this.setDayOfYear(value.toInt())
-	setHours(value: Number): Date { // {{{
+	setDayOfYear(value: String): this ~ ParseError => this.setDayOfYear(value.toInt())
+	setHour(value: Number): this { // {{{
 		this.setUTCHours(value)
-
-		return this
 	} // }}}
-	setHours(value: String): Date ~ ParseError => this.setHours(value.toInt())
-	setMilliseconds(value: Number): Date { // {{{
+	setHour(value: String): this ~ ParseError => this.setHour(value.toInt())
+	setMillisecond(value: Number): this { // {{{
 		this.setUTCMilliseconds(value)
-
-		return this
 	} // }}}
-	setMilliseconds(value: String): Date ~ ParseError => this.setMilliseconds(value.toInt())
-	setMinutes(value: Number): Date { // {{{
+	setMillisecond(value: String): this ~ ParseError => this.setMillisecond(value.toInt())
+	setMinute(value: Number): this { // {{{
 		this.setUTCMinutes(value)
-
-		return this
 	} // }}}
-	setMinutes(value: String): Date ~ ParseError => this.setMinutes(value.toInt())
-	setMonth(value: Number): Date { // {{{
+	setMinute(value: String): this ~ ParseError => this.setMinute(value.toInt())
+	setMonth(value: Number): this { // {{{
 		this.setUTCMonth(value - 1)
-
-		return this
 	} // }}}
-	setMonth(value: String): Date ~ ParseError => this.setMonth(value.toInt())
-	setSeconds(value: Number): Date { // {{{
+	setMonth(value: String): this ~ ParseError => this.setMonth(value.toInt())
+	setSecond(value: Number): this { // {{{
 		this.setUTCSeconds(value)
-
-		return this
 	} // }}}
-	setSeconds(value: String): Date ~ ParseError => this.setSeconds(value.toInt())
-	setYear(value: Number): Date { // {{{
+	setSecond(value: String): this ~ ParseError => this.setSecond(value.toInt())
+	setYear(value: Number): this { // {{{
 		this.setUTCFullYear(value)
-
-		return this
 	} // }}}
-	setYear(value: String): Date ~ ParseError => this.setYear(value.toInt())
-	setWeek(value: Number): Date { // {{{
+	setYear(value: String): this ~ ParseError => this.setYear(value.toInt())
+	setWeek(value: Number): this { // {{{
 		const w = this.getWeek()
+
 		if w != 0 || this.getMonth() == 1 {
-			this.add('week', value - w)
+			this.plusWeeks(value - w)
 		}
 		else {
-			this.rewind('week', 1).add('week', value - this.getWeek())
+			this.minusWeeks(1).plusWeeks(value - this.getWeek())
 		}
-
-		return this
 	} // }}}
-	setWeek(value: String): Date ~ ParseError => this.setWeek(value.toInt())
-	startOf(space: String): Date { // {{{
-		switch space {
-			'year' => {
+	setWeek(value: String): this ~ ParseError => this.setWeek(value.toInt())
+	startOf(field: DateField): this { // {{{
+		switch field {
+			DateField::YEAR => {
 				this.setUTCMonth(0)
 				this.setUTCDate(1)
 				this.setUTCHours(0)
@@ -816,43 +846,42 @@ impl Date {
 				this.setUTCSeconds(0)
 				this.setUTCMilliseconds(0)
 			}
-			'month' => {
+			DateField::MONTH => {
 				this.setUTCDate(1)
 				this.setUTCHours(0)
 				this.setUTCMinutes(0)
 				this.setUTCSeconds(0)
 				this.setUTCMilliseconds(0)
 			}
-			'day' => {
+			DateField::DAY => {
 				this.setUTCHours(0)
 				this.setUTCMinutes(0)
 				this.setUTCSeconds(0)
 				this.setUTCMilliseconds(0)
 			}
-			'hour' => {
+			DateField::HOUR => {
 				this.setUTCMinutes(0)
 				this.setUTCSeconds(0)
 				this.setUTCMilliseconds(0)
 			}
-			'minute' => {
+			DateField::MINUTE => {
 				this.setUTCSeconds(0)
 				this.setUTCMilliseconds(0)
 			}
-			'second' => {
+			DateField::SECOND => {
 				this.setUTCMilliseconds(0)
 			}
-			'week' => {
-				this.rewind('day', (this.getUTCDay() - 1).mod(7))
+			DateField::WEEK => {
+				this.minusDays((this.getUTCDay() - 1).mod(7))
 				this.setUTCHours(0)
 				this.setUTCMinutes(0)
 				this.setUTCSeconds(0)
 				this.setUTCMilliseconds(0)
 			}
 		}
-
-		return this
 	} // }}}
+	startOf(field: String): this ~ ParseError => this.startOf(DateField.fromString(field))
 	toString(): String => this.toISOString()
 }
 
-export Date, ParseError
+export Date, DateField, TimeUnit, WeekField, ParseError

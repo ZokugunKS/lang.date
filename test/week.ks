@@ -1,4 +1,5 @@
 #![bin]
+#![error(off)]
 
 extern {
 	describe:	func
@@ -38,7 +39,7 @@ describe('week', func() {
 
 			expect(d.getYear()).to.equal(2000)
 			expect(d.getMonth()).to.equal(1)
-			expect(d.getDayOfMonth()).to.equal(8)
+			expect(d.getDay()).to.equal(8)
 		}) // }}}
 
 		it('2000-12-31', func() { // {{{
@@ -46,7 +47,7 @@ describe('week', func() {
 
 			expect(d.getYear()).to.equal(2000)
 			expect(d.getMonth()).to.equal(12)
-			expect(d.getDayOfMonth()).to.equal(17)
+			expect(d.getDay()).to.equal(17)
 		}) // }}}
 	})
 
@@ -63,7 +64,7 @@ describe('week', func() {
 
 				expect(d.getYear()).to.equal(2000)
 				expect(d.getMonth()).to.equal(1)
-				expect(d.getDayOfMonth()).to.equal(20)
+				expect(d.getDay()).to.equal(20)
 				expect(d.getDayOfWeek()).to.equal(4)
 			}) // }}}
 

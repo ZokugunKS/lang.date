@@ -12,367 +12,1664 @@ import {
 }
 
 describe('manipulate', func() {
-	it('add year +1', func() { // {{{
-		const r = new Date()
-		r.setYear(r.getYear() + 1)
+	const o = new Date()
 
-		expect(new Date().add('year', 1).getYear()).to.equal(r.getYear())
-	}) // }}}
+	describe('endOf', func() { // {{{
+		const r = new Date(o)
 
-	it('add year -1', func() { // {{{
-		const r = new Date()
-		r.setYear(r.getYear() - 1)
+		describe('year', func() {
+			it('enu', func() { // {{{
+				const d = new Date(o).endOf(DateField::YEAR)
 
-		expect(new Date().add('year', -1).getYear()).to.equal(r.getYear())
-	}) // }}}
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(12)
+				expect(d.getDay()).to.equal(31)
+				expect(d.getHour()).to.equal(23)
+				expect(d.getMinute()).to.equal(59)
+				expect(d.getSecond()).to.equal(59)
+				expect(d.getMillisecond()).to.equal(999)
+			}) // }}}
 
-	it('add month +1', func() { // {{{
-		const r = new Date()
-		r.setMonth(r.getMonth() + 1)
+			it('str', func() { // {{{
+				const d = new Date(o).endOf('year')
 
-		expect(new Date().add('month', 1).getMonth()).to.equal(r.getMonth())
-	}) // }}}
-
-	it('add month -1', func() { // {{{
-		const r = new Date()
-		r.setMonth(r.getMonth() - 1)
-
-		expect(new Date().add('month', -1).getMonth()).to.equal(r.getMonth())
-	}) // }}}
-
-	it('add week +1', func() { // {{{
-		const r = new Date()
-		r.setDay(r.getDay() + 7)
-
-		expect(new Date().add('week', 1).getDay()).to.equal(r.getDay())
-	}) // }}}
-
-	it('add week -1', func() { // {{{
-		const r = new Date()
-		r.setDay(r.getDay() - 7)
-
-		expect(new Date().add('week', -1).getDay()).to.equal(r.getDay())
-	}) // }}}
-
-	it('add day +1', func() { // {{{
-		const r = new Date()
-		r.setDay(r.getDay() + 1)
-
-		expect(new Date().add('day', 1).getDay()).to.equal(r.getDay())
-	}) // }}}
-
-	it('add day -1', func() { // {{{
-		const r = new Date()
-		r.setDay(r.getDay() - 1)
-
-		expect(new Date().add('day', -1).getDay()).to.equal(r.getDay())
-	}) // }}}
-
-	it('add hour +1', func() { // {{{
-		const r = new Date()
-		r.setHours(r.getHours() + 1)
-
-		expect(new Date().add('hour', 1).getHours()).to.equal(r.getHours())
-	}) // }}}
-
-	it('add hour -1', func() { // {{{
-		const r = new Date()
-		r.setHours(r.getHours() - 1)
-
-		expect(new Date().add('hour', -1).getHours()).to.equal(r.getHours())
-	}) // }}}
-
-	it('add minute +1', func() { // {{{
-		const r = new Date()
-		r.setMinutes(r.getMinutes() + 1)
-
-		expect(new Date().add('minute', 1).getMinutes()).to.equal(r.getMinutes())
-	}) // }}}
-
-	it('add minute -1', func() { // {{{
-		const r = new Date()
-		r.setMinutes(r.getMinutes() - 1)
-
-		expect(new Date().add('minute', -1).getMinutes()).to.equal(r.getMinutes())
-	}) // }}}
-
-	it('add second +1', func() { // {{{
-		const r = new Date()
-		r.setSeconds(r.getSeconds() + 1)
-
-		expect(new Date().add('second', 1).getSeconds()).to.equal(r.getSeconds())
-	}) // }}}
-
-	it('add second -1', func() { // {{{
-		const r = new Date()
-		r.setSeconds(r.getSeconds() - 1)
-
-		expect(new Date().add('second', -1).getSeconds()).to.equal(r.getSeconds())
-	}) // }}}
-
-	it('add millisecond +1', func() { // {{{
-		const r = new Date()
-		const d = r.clone()
-
-		r.setMilliseconds(r.getMilliseconds() + 1)
-
-		expect(d.add('millisecond', 1).getMilliseconds()).to.equal(r.getMilliseconds())
-	}) // }}}
-
-	it('add millisecond -1', func() { // {{{
-		const r = new Date()
-		const d = r.clone()
-
-		r.setMilliseconds(r.getMilliseconds() - 1)
-
-		expect(d.add('millisecond', -1).getMilliseconds()).to.equal(r.getMilliseconds())
-	}) // }}}
-
-	it('add dictionary', func() { // {{{
-		const r = new Date()
-		r.setMonth(r.getMonth() + 1)
-		r.setDay(r.getDay() - 3)
-		r.setHours(r.getHours() + 6)
-
-		const d = new Date().add({
-			month: 1,
-			day: -3,
-			hours: 6
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(12)
+				expect(d.getDay()).to.equal(31)
+				expect(d.getHour()).to.equal(23)
+				expect(d.getMinute()).to.equal(59)
+				expect(d.getSecond()).to.equal(59)
+				expect(d.getMillisecond()).to.equal(999)
+			}) // }}}
 		})
 
-		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDay()).to.equal(r.getDay())
-		expect(d.getHours()).to.equal(r.getHours())
-	}) // }}}
+		describe('month', func() {
+			it('enu', func() { // {{{
+				const d = new Date(o).endOf(DateField::MONTH)
 
-	it('rewind month', func() { // {{{
-		const r = new Date()
-		r.setMonth(r.getMonth() - 1)
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(r.getDaysInMonth())
+				expect(d.getHour()).to.equal(23)
+				expect(d.getMinute()).to.equal(59)
+				expect(d.getSecond()).to.equal(59)
+				expect(d.getMillisecond()).to.equal(999)
+			}) // }}}
 
-		const d = new Date().rewind('month', 1)
+			it('str', func() { // {{{
+				const d = new Date(o).endOf('month')
 
-		expect(d.getMonth()).to.equal(r.getMonth())
-	}) // }}}
-
-	it('rewind dictionary', func() { // {{{
-		const r = new Date()
-		r.setMonth(r.getMonth() - 1)
-		r.setDay(r.getDay() + 3)
-		r.setHours(r.getHours() - 6)
-
-		const d = new Date().rewind({
-			month: 1,
-			day: -3,
-			hours: 6
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(r.getDaysInMonth())
+				expect(d.getHour()).to.equal(23)
+				expect(d.getMinute()).to.equal(59)
+				expect(d.getSecond()).to.equal(59)
+				expect(d.getMillisecond()).to.equal(999)
+			}) // }}}
 		})
 
-		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDay()).to.equal(r.getDay())
-		expect(d.getHours()).to.equal(r.getHours())
-	}) // }}}
+		describe('day', func() {
+			it('enu', func() { // {{{
+				const d = new Date(o).endOf(DateField::DAY)
 
-	it('set month', func() { // {{{
-		const d = new Date().set('month', 3)
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(r.getDay())
+				expect(d.getHour()).to.equal(23)
+				expect(d.getMinute()).to.equal(59)
+				expect(d.getSecond()).to.equal(59)
+				expect(d.getMillisecond()).to.equal(999)
+			}) // }}}
 
-		expect(d.getMonth()).to.equal(3)
-	}) // }}}
+			it('str', func() { // {{{
+				const d = new Date(o).endOf('day')
 
-	it('set dictionary', func() { // {{{
-		const d = new Date().set({
-			month: 5,
-			day: 12,
-			hours: 6
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(r.getDay())
+				expect(d.getHour()).to.equal(23)
+				expect(d.getMinute()).to.equal(59)
+				expect(d.getSecond()).to.equal(59)
+				expect(d.getMillisecond()).to.equal(999)
+			}) // }}}
 		})
 
-		expect(d.getMonth()).to.equal(5)
-		expect(d.getDay()).to.equal(12)
-		expect(d.getHours()).to.equal(6)
+		describe('hour', func() {
+			it('enu', func() { // {{{
+				const d = new Date(o).endOf(DateField::HOUR)
+
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(r.getDay())
+				expect(d.getHour()).to.equal(r.getHour())
+				expect(d.getMinute()).to.equal(59)
+				expect(d.getSecond()).to.equal(59)
+				expect(d.getMillisecond()).to.equal(999)
+			}) // }}}
+
+			it('str', func() { // {{{
+				const d = new Date(o).endOf('hour')
+
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(r.getDay())
+				expect(d.getHour()).to.equal(r.getHour())
+				expect(d.getMinute()).to.equal(59)
+				expect(d.getSecond()).to.equal(59)
+				expect(d.getMillisecond()).to.equal(999)
+			}) // }}}
+		})
+
+		describe('minute', func() {
+			it('enu', func() { // {{{
+				const d = new Date(o).endOf(DateField::MINUTE)
+
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(r.getDay())
+				expect(d.getHour()).to.equal(r.getHour())
+				expect(d.getMinute()).to.equal(r.getMinute())
+				expect(d.getSecond()).to.equal(59)
+				expect(d.getMillisecond()).to.equal(999)
+			}) // }}}
+
+			it('str', func() { // {{{
+				const d = new Date(o).endOf('minute')
+
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(r.getDay())
+				expect(d.getHour()).to.equal(r.getHour())
+				expect(d.getMinute()).to.equal(r.getMinute())
+				expect(d.getSecond()).to.equal(59)
+				expect(d.getMillisecond()).to.equal(999)
+			}) // }}}
+		})
+
+		describe('second', func() {
+			it('enu', func() { // {{{
+				const d = new Date(o).endOf(DateField::SECOND)
+
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(r.getDay())
+				expect(d.getHour()).to.equal(r.getHour())
+				expect(d.getMinute()).to.equal(r.getMinute())
+				expect(d.getSecond()).to.equal(r.getSecond())
+				expect(d.getMillisecond()).to.equal(999)
+			}) // }}}
+
+			it('str', func() { // {{{
+				const d = new Date(o).endOf('second')
+
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(r.getDay())
+				expect(d.getHour()).to.equal(r.getHour())
+				expect(d.getMinute()).to.equal(r.getMinute())
+				expect(d.getSecond()).to.equal(r.getSecond())
+				expect(d.getMillisecond()).to.equal(999)
+			}) // }}}
+		})
+	}) // }}}
+
+	describe('future', func() { // {{{
+		it('2000-1-1 saturday str', func() { // {{{
+			const d = Date.create(2000, 1, 1).future('saturday')
+
+			expect(d.getYear()).to.equal(2000)
+			expect(d.getMonth()).to.equal(1)
+			expect(d.getDay()).to.equal(8)
+		}) // }}}
+
+		it('2000-1-1 sunday str', func() { // {{{
+			const d = Date.create(2000, 1, 1).future('sunday')
+
+			expect(d.getYear()).to.equal(2000)
+			expect(d.getMonth()).to.equal(1)
+			expect(d.getDay()).to.equal(2)
+		}) // }}}
+
+		it('2000-1-3 saturday str', func() { // {{{
+			const d = Date.create(2000, 1, 3).future('saturday')
+
+			expect(d.getYear()).to.equal(2000)
+			expect(d.getMonth()).to.equal(1)
+			expect(d.getDay()).to.equal(8)
+		}) // }}}
+
+		it('2000-1-3 sunday str', func() { // {{{
+			const d = Date.create(2000, 1, 3).future('sunday')
+
+			expect(d.getYear()).to.equal(2000)
+			expect(d.getMonth()).to.equal(1)
+			expect(d.getDay()).to.equal(9)
+		}) // }}}
+	}) // }}}
+
+	describe('futureOrPresent', func() { // {{{
+		it('2000-1-1 enu', func() { // {{{
+			const d = Date.create(2000, 1, 1).futureOrPresent(WeekField::SATURDAY)
+
+			expect(d.getYear()).to.equal(2000)
+			expect(d.getMonth()).to.equal(1)
+			expect(d.getDay()).to.equal(1)
+		}) // }}}
+
+		it('2000-1-1 str', func() { // {{{
+			const d = Date.create(2000, 1, 1).futureOrPresent('saturday')
+
+			expect(d.getYear()).to.equal(2000)
+			expect(d.getMonth()).to.equal(1)
+			expect(d.getDay()).to.equal(1)
+		}) // }}}
 	}) // }}}
 
 	it('midnight', func() { // {{{
-		const d = new Date().midnight()
+		const d = new Date(o).midnight()
 
-		expect(d.getHours()).to.equal(0)
-		expect(d.getMinutes()).to.equal(0)
-		expect(d.getSeconds()).to.equal(0)
-		expect(d.getMilliseconds()).to.equal(0)
+		expect(d.getHour()).to.equal(0)
+		expect(d.getMinute()).to.equal(0)
+		expect(d.getSecond()).to.equal(0)
+		expect(d.getMillisecond()).to.equal(0)
 	}) // }}}
 
-	it('noon local', func() { // {{{
-		const d = new Date().noon()
+	describe('minus', func() { // {{{
+		describe('year', func() {
+			const r = new Date(o)
+			r.setYear(r.getYear() - 1)
 
-		expect(d.getHours()).to.equal(12)
-		expect(d.getMinutes()).to.equal(0)
-		expect(d.getSeconds()).to.equal(0)
-		expect(d.getMilliseconds()).to.equal(0)
+			it('i', func() { // {{{
+				const d = new Date(o)
+
+				d.minusYears(1)
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+
+			it('s', func() { // {{{
+				const d = new Date(o)
+
+				d.minusYears('1')
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+
+			it('d_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus({years: 1})
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+
+			it('d_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus({years: '1'})
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+
+			it('e_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::YEARS, 1)
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+
+			it('e_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::YEARS, '1')
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+
+			it('s_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('year', 1)
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+
+			it('s_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('year', '1')
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+		})
+
+		describe('month', func() {
+			const r = new Date(o)
+			r.setMonth(r.getMonth() - 1)
+
+			it('i', func() { // {{{
+				const d = new Date(o)
+
+				d.minusMonths(1)
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+
+			it('s', func() { // {{{
+				const d = new Date(o)
+
+				d.minusMonths('1')
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+
+			it('d_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus({months: 1})
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+
+			it('d_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus({months: '1'})
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+
+			it('e_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::MONTHS, 1)
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+
+			it('e_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::MONTHS, '1')
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+
+			it('s_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('month', 1)
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+
+			it('s_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('month', '1')
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+		})
+
+		describe('week', func() {
+			const r = new Date(o)
+			r.setWeek(r.getWeek() - 1)
+
+			it('i', func() { // {{{
+				const d = new Date(o)
+
+				d.minusWeeks(1)
+
+				expect(d.getWeek()).to.equal(r.getWeek())
+			}) // }}}
+
+			it('s', func() { // {{{
+				const d = new Date(o)
+
+				d.minusWeeks('1')
+
+				expect(d.getWeek()).to.equal(r.getWeek())
+			}) // }}}
+
+			it('d_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus({weeks: 1})
+
+				expect(d.getWeek()).to.equal(r.getWeek())
+			}) // }}}
+
+			it('d_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus({weeks: '1'})
+
+				expect(d.getWeek()).to.equal(r.getWeek())
+			}) // }}}
+
+			it('e_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::WEEKS, 1)
+
+				expect(d.getWeek()).to.equal(r.getWeek())
+			}) // }}}
+
+			it('e_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::WEEKS, '1')
+
+				expect(d.getWeek()).to.equal(r.getWeek())
+			}) // }}}
+
+			it('s_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('week', 1)
+
+				expect(d.getWeek()).to.equal(r.getWeek())
+			}) // }}}
+
+			it('s_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('week', '1')
+
+				expect(d.getWeek()).to.equal(r.getWeek())
+			}) // }}}
+		})
+
+		describe('day', func() {
+			const r = new Date(o)
+			r.setDay(r.getDay() - 1)
+
+			it('i', func() { // {{{
+				const d = new Date(o)
+
+				d.minusDays(1)
+
+				expect(d.getDay()).to.equal(r.getDay())
+			}) // }}}
+
+			it('s', func() { // {{{
+				const d = new Date(o)
+
+				d.minusDays('1')
+
+				expect(d.getDay()).to.equal(r.getDay())
+			}) // }}}
+
+			it('d_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus({days: 1})
+
+				expect(d.getDay()).to.equal(r.getDay())
+			}) // }}}
+
+			it('d_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus({days: '1'})
+
+				expect(d.getDay()).to.equal(r.getDay())
+			}) // }}}
+
+			it('e_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::DAYS, 1)
+
+				expect(d.getDay()).to.equal(r.getDay())
+			}) // }}}
+
+			it('e_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::DAYS, '1')
+
+				expect(d.getDay()).to.equal(r.getDay())
+			}) // }}}
+
+			it('s_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('day', 1)
+
+				expect(d.getDay()).to.equal(r.getDay())
+			}) // }}}
+
+			it('s_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('day', '1')
+
+				expect(d.getDay()).to.equal(r.getDay())
+			}) // }}}
+		})
+
+		describe('hour', func() {
+			const r = new Date(o)
+			r.setHour(r.getHour() - 1)
+
+			it('i', func() { // {{{
+				const d = new Date(o)
+
+				d.minusHours(1)
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+
+			it('s', func() { // {{{
+				const d = new Date(o)
+
+				d.minusHours('1')
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+
+			it('d_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus({hours: 1})
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+
+			it('d_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus({hours: '1'})
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+
+			it('e_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::HOURS, 1)
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+
+			it('e_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::HOURS, '1')
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+
+			it('s_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('hour', 1)
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+
+			it('s_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('hour', '1')
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+		})
+
+		describe('minute', func() {
+			const r = new Date(o)
+			r.setMinute(r.getMinute() - 1)
+
+			it('i', func() { // {{{
+				const d = new Date(o)
+
+				d.minusMinutes(1)
+
+				expect(d.getMinute()).to.equal(r.getMinute())
+			}) // }}}
+
+			it('s', func() { // {{{
+				const d = new Date(o)
+
+				d.minusMinutes('1')
+
+				expect(d.getMinute()).to.equal(r.getMinute())
+			}) // }}}
+
+			it('d_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus({minutes: 1})
+
+				expect(d.getMinute()).to.equal(r.getMinute())
+			}) // }}}
+
+			it('d_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus({minutes: '1'})
+
+				expect(d.getMinute()).to.equal(r.getMinute())
+			}) // }}}
+
+			it('e_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::MINUTES, 1)
+
+				expect(d.getMinute()).to.equal(r.getMinute())
+			}) // }}}
+
+			it('e_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::MINUTES, '1')
+
+				expect(d.getMinute()).to.equal(r.getMinute())
+			}) // }}}
+
+			it('s_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('minute', 1)
+
+				expect(d.getMinute()).to.equal(r.getMinute())
+			}) // }}}
+
+			it('s_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('minute', '1')
+
+				expect(d.getMinute()).to.equal(r.getMinute())
+			}) // }}}
+		})
+
+		describe('second', func() {
+			const r = new Date(o)
+			r.setSecond(r.getSecond() - 1)
+
+			it('i', func() { // {{{
+				const d = new Date(o)
+
+				d.minusSeconds(1)
+
+				expect(d.getSecond()).to.equal(r.getSecond())
+			}) // }}}
+
+			it('s', func() { // {{{
+				const d = new Date(o)
+
+				d.minusSeconds('1')
+
+				expect(d.getSecond()).to.equal(r.getSecond())
+			}) // }}}
+
+			it('d_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus({seconds: 1})
+
+				expect(d.getSecond()).to.equal(r.getSecond())
+			}) // }}}
+
+			it('d_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus({seconds: '1'})
+
+				expect(d.getSecond()).to.equal(r.getSecond())
+			}) // }}}
+
+			it('e_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::SECONDS, 1)
+
+				expect(d.getSecond()).to.equal(r.getSecond())
+			}) // }}}
+
+			it('e_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::SECONDS, '1')
+
+				expect(d.getSecond()).to.equal(r.getSecond())
+			}) // }}}
+
+			it('s_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('second', 1)
+
+				expect(d.getSecond()).to.equal(r.getSecond())
+			}) // }}}
+
+			it('s_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('second', '1')
+
+				expect(d.getSecond()).to.equal(r.getSecond())
+			}) // }}}
+		})
+
+		describe('millisecond', func() {
+			const r = new Date(o)
+			r.setMillisecond(r.getMillisecond() - 1)
+
+			it('i', func() { // {{{
+				const d = new Date(o)
+
+				d.minusMilliseconds(1)
+
+				expect(d.getMillisecond()).to.equal(r.getMillisecond())
+			}) // }}}
+
+			it('s', func() { // {{{
+				const d = new Date(o)
+
+				d.minusMilliseconds('1')
+
+				expect(d.getMillisecond()).to.equal(r.getMillisecond())
+			}) // }}}
+
+			it('d_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus({milliseconds: 1})
+
+				expect(d.getMillisecond()).to.equal(r.getMillisecond())
+			}) // }}}
+
+			it('d_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus({milliseconds: '1'})
+
+				expect(d.getMillisecond()).to.equal(r.getMillisecond())
+			}) // }}}
+
+			it('e_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::MILLISECONDS, 1)
+
+				expect(d.getMillisecond()).to.equal(r.getMillisecond())
+			}) // }}}
+
+			it('e_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::MILLISECONDS, '1')
+
+				expect(d.getMillisecond()).to.equal(r.getMillisecond())
+			}) // }}}
+
+			it('s_i', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('millisecond', 1)
+
+				expect(d.getMillisecond()).to.equal(r.getMillisecond())
+			}) // }}}
+
+			it('s_s', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('millisecond', '1')
+
+				expect(d.getMillisecond()).to.equal(r.getMillisecond())
+			}) // }}}
+		})
+
+		describe('millennia', func() {
+			const r = new Date(o)
+			r.setYear(r.getYear() - 1_000)
+
+			it('enu', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::MILLENNIA, 1)
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+
+			it('str', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('millennia', 1)
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+		})
+
+		describe('centuries', func() {
+			const r = new Date(o)
+			r.setYear(r.getYear() - 100)
+
+			it('enu', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::CENTURIES, 1)
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+
+			it('str', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('centuries', 1)
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+		})
+
+		describe('decades', func() {
+			const r = new Date(o)
+			r.setYear(r.getYear() - 10)
+
+			it('enu', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::DECADES, 1)
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+
+			it('str', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('decades', 1)
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+		})
+
+		describe('semesters', func() {
+			const r = new Date(o)
+			r.setMonth(r.getMonth() - 6)
+
+			it('enu', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::SEMESTERS, 1)
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+
+			it('str', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('semesters', 1)
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+		})
+
+		describe('quarters', func() {
+			const r = new Date(o)
+			r.setMonth(r.getMonth() - 3)
+
+			it('enu', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::QUARTERS, 1)
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+
+			it('str', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('quarters', 1)
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+		})
+
+		describe('half_days', func() {
+			const r = new Date(o)
+			r.setHour(r.getHour() - 12)
+
+			it('enu', func() { // {{{
+				const d = new Date(o)
+
+				d.minus(TimeUnit::HALF_DAYS, 1)
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+
+			it('str', func() { // {{{
+				const d = new Date(o)
+
+				d.minus('half_days', 1)
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+		})
 	}) // }}}
 
-	it('startOf year', func() { // {{{
-		const r = new Date()
+	it('noon', func() { // {{{
+		const d = new Date(o).noon()
 
-		const d = new Date().startOf('year')
-
-		expect(d.getYear()).to.equal(r.getYear())
-		expect(d.getMonth()).to.equal(1)
-		expect(d.getDay()).to.equal(1)
-		expect(d.getHours()).to.equal(0)
-		expect(d.getMinutes()).to.equal(0)
-		expect(d.getSeconds()).to.equal(0)
-		expect(d.getMilliseconds()).to.equal(0)
+		expect(d.getHour()).to.equal(12)
+		expect(d.getMinute()).to.equal(0)
+		expect(d.getSecond()).to.equal(0)
+		expect(d.getMillisecond()).to.equal(0)
 	}) // }}}
 
-	it('startOf month', func() { // {{{
-		const r = new Date()
+	describe('past', func() { // {{{
+		it('2000-1-1 saturday str', func() { // {{{
+			const d = Date.create(2000, 1, 1).past('saturday')
 
-		const d = new Date().startOf('month')
+			expect(d.getYear()).to.equal(1999)
+			expect(d.getMonth()).to.equal(12)
+			expect(d.getDay()).to.equal(25)
+		}) // }}}
 
-		expect(d.getYear()).to.equal(r.getYear())
-		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDay()).to.equal(1)
-		expect(d.getHours()).to.equal(0)
-		expect(d.getMinutes()).to.equal(0)
-		expect(d.getSeconds()).to.equal(0)
-		expect(d.getMilliseconds()).to.equal(0)
+		it('2000-1-1 saturday enu', func() { // {{{
+			const d = Date.create(2000, 1, 1).past(WeekField::SATURDAY)
+
+			expect(d.getYear()).to.equal(1999)
+			expect(d.getMonth()).to.equal(12)
+			expect(d.getDay()).to.equal(25)
+		}) // }}}
+
+		it('2000-1-3 saturday str', func() { // {{{
+			const d = Date.create(2000, 1, 3).past('saturday')
+
+			expect(d.getYear()).to.equal(2000)
+			expect(d.getMonth()).to.equal(1)
+			expect(d.getDay()).to.equal(1)
+		}) // }}}
+
+		it('2000-1-3 saturday enu', func() { // {{{
+			const d = Date.create(2000, 1, 3).past(WeekField::SATURDAY)
+
+			expect(d.getYear()).to.equal(2000)
+			expect(d.getMonth()).to.equal(1)
+			expect(d.getDay()).to.equal(1)
+		}) // }}}
+
+		it('2000-1-3 sunday str', func() { // {{{
+			const d = Date.create(2000, 1, 3).past('sunday')
+
+			expect(d.getYear()).to.equal(2000)
+			expect(d.getMonth()).to.equal(1)
+			expect(d.getDay()).to.equal(2)
+		}) // }}}
+
+		it('2000-1-3 sunday enu', func() { // {{{
+			const d = Date.create(2000, 1, 3).past(WeekField::SUNDAY)
+
+			expect(d.getYear()).to.equal(2000)
+			expect(d.getMonth()).to.equal(1)
+			expect(d.getDay()).to.equal(2)
+		}) // }}}
 	}) // }}}
 
-	it('startOf day', func() { // {{{
-		const r = new Date()
+	describe('pastOrPresent', func() { // {{{
+		it('pastOrPresent 2000-1-1 str', func() { // {{{
+			const d = Date.create(2000, 1, 1).pastOrPresent('saturday')
 
-		const d = new Date().startOf('day')
+			expect(d.getYear()).to.equal(2000)
+			expect(d.getMonth()).to.equal(1)
+			expect(d.getDay()).to.equal(1)
+		}) // }}}
 
-		expect(d.getYear()).to.equal(r.getYear())
-		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDay()).to.equal(r.getDay())
-		expect(d.getHours()).to.equal(0)
-		expect(d.getMinutes()).to.equal(0)
-		expect(d.getSeconds()).to.equal(0)
-		expect(d.getMilliseconds()).to.equal(0)
+		it('pastOrPresent 2000-1-1 enu', func() { // {{{
+			const d = Date.create(2000, 1, 1).pastOrPresent(WeekField::SATURDAY)
+
+			expect(d.getYear()).to.equal(2000)
+			expect(d.getMonth()).to.equal(1)
+			expect(d.getDay()).to.equal(1)
+		}) // }}}
 	}) // }}}
 
-	it('startOf hour', func() { // {{{
-		const r = new Date()
+	describe('plus', func() { // {{{
+		describe('year', func() {
+			const r = new Date(o)
+			r.setYear(r.getYear() + 1)
 
-		const d = new Date().startOf('hour')
+			it('i', func() { // {{{
+				const d = new Date(o)
 
-		expect(d.getYear()).to.equal(r.getYear())
-		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDay()).to.equal(r.getDay())
-		expect(d.getHours()).to.equal(r.getHours())
-		expect(d.getMinutes()).to.equal(0)
-		expect(d.getSeconds()).to.equal(0)
-		expect(d.getMilliseconds()).to.equal(0)
-	}) // }}}
+				d.plusYears(1)
 
-	it('startOf minute', func() { // {{{
-		const r = new Date()
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
 
-		const d = new Date().startOf('minute')
+			it('s', func() { // {{{
+				const d = new Date(o)
 
-		expect(d.getYear()).to.equal(r.getYear())
-		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDay()).to.equal(r.getDay())
-		expect(d.getHours()).to.equal(r.getHours())
-		expect(d.getMinutes()).to.equal(r.getMinutes())
-		expect(d.getSeconds()).to.equal(0)
-		expect(d.getMilliseconds()).to.equal(0)
-	}) // }}}
+				d.plusYears('1')
 
-	it('startOf second', func() { // {{{
-		const r = new Date()
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
 
-		const d = new Date().startOf('second')
+			it('d_i', func() { // {{{
+				const d = new Date(o)
 
-		expect(d.getYear()).to.equal(r.getYear())
-		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDay()).to.equal(r.getDay())
-		expect(d.getHours()).to.equal(r.getHours())
-		expect(d.getMinutes()).to.equal(r.getMinutes())
-		expect(d.getSeconds()).to.equal(r.getSeconds())
-		expect(d.getMilliseconds()).to.equal(0)
-	}) // }}}
+				d.plus({years: 1})
 
-	it('endOf year', func() { // {{{
-		const r = new Date()
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
 
-		const d = new Date().endOf('year')
+			it('d_s', func() { // {{{
+				const d = new Date(o)
 
-		expect(d.getYear()).to.equal(r.getYear())
-		expect(d.getMonth()).to.equal(12)
-		expect(d.getDay()).to.equal(31)
-		expect(d.getHours()).to.equal(23)
-		expect(d.getMinutes()).to.equal(59)
-		expect(d.getSeconds()).to.equal(59)
-		expect(d.getMilliseconds()).to.equal(999)
-	}) // }}}
+				d.plus({years: '1'})
 
-	it('endOf month', func() { // {{{
-		const r = new Date()
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
 
-		const d = new Date().endOf('month')
+			it('e_i', func() { // {{{
+				const d = new Date(o)
 
-		expect(d.getYear()).to.equal(r.getYear())
-		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDay()).to.equal(r.getDaysInMonth())
-		expect(d.getHours()).to.equal(23)
-		expect(d.getMinutes()).to.equal(59)
-		expect(d.getSeconds()).to.equal(59)
-		expect(d.getMilliseconds()).to.equal(999)
-	}) // }}}
+				d.plus(TimeUnit::YEARS, 1)
 
-	it('endOf day', func() { // {{{
-		const r = new Date()
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
 
-		const d = new Date().endOf('day')
+			it('e_s', func() { // {{{
+				const d = new Date(o)
 
-		expect(d.getYear()).to.equal(r.getYear())
-		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDay()).to.equal(r.getDay())
-		expect(d.getHours()).to.equal(23)
-		expect(d.getMinutes()).to.equal(59)
-		expect(d.getSeconds()).to.equal(59)
-		expect(d.getMilliseconds()).to.equal(999)
-	}) // }}}
+				d.plus(TimeUnit::YEARS, '1')
 
-	it('endOf hour', func() { // {{{
-		const r = new Date()
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
 
-		const d = new Date().endOf('hour')
+			it('s_i', func() { // {{{
+				const d = new Date(o)
 
-		expect(d.getYear()).to.equal(r.getYear())
-		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDay()).to.equal(r.getDay())
-		expect(d.getHours()).to.equal(r.getHours())
-		expect(d.getMinutes()).to.equal(59)
-		expect(d.getSeconds()).to.equal(59)
-		expect(d.getMilliseconds()).to.equal(999)
-	}) // }}}
+				d.plus('year', 1)
 
-	it('endOf minute', func() { // {{{
-		const r = new Date()
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
 
-		const d = new Date().endOf('minute')
+			it('s_s', func() { // {{{
+				const d = new Date(o)
 
-		expect(d.getYear()).to.equal(r.getYear())
-		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDay()).to.equal(r.getDay())
-		expect(d.getHours()).to.equal(r.getHours())
-		expect(d.getMinutes()).to.equal(r.getMinutes())
-		expect(d.getSeconds()).to.equal(59)
-		expect(d.getMilliseconds()).to.equal(999)
-	}) // }}}
+				d.plus('year', '1')
 
-	it('endOf second', func() { // {{{
-		const r = new Date()
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+		})
 
-		const d = new Date().endOf('second')
+		describe('month', func() {
+			const r = new Date(o)
+			r.setMonth(r.getMonth() + 1)
 
-		expect(d.getYear()).to.equal(r.getYear())
-		expect(d.getMonth()).to.equal(r.getMonth())
-		expect(d.getDay()).to.equal(r.getDay())
-		expect(d.getHours()).to.equal(r.getHours())
-		expect(d.getMinutes()).to.equal(r.getMinutes())
-		expect(d.getSeconds()).to.equal(r.getSeconds())
-		expect(d.getMilliseconds()).to.equal(999)
+			it('i', func() { // {{{
+				const d = new Date(o)
+
+				d.plusMonths(1)
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+
+			it('s', func() { // {{{
+				const d = new Date(o)
+
+				d.plusMonths('1')
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+
+			it('d_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus({months: 1})
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+
+			it('d_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus({months: '1'})
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+
+			it('e_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::MONTHS, 1)
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+
+			it('e_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::MONTHS, '1')
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+
+			it('s_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('month', 1)
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+
+			it('s_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('month', '1')
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+		})
+
+		describe('week', func() {
+			const r = new Date(o)
+			r.setWeek(r.getWeek() + 1)
+
+			it('i', func() { // {{{
+				const d = new Date(o)
+
+				d.plusWeeks(1)
+
+				expect(d.getWeek()).to.equal(r.getWeek())
+			}) // }}}
+
+			it('s', func() { // {{{
+				const d = new Date(o)
+
+				d.plusWeeks('1')
+
+				expect(d.getWeek()).to.equal(r.getWeek())
+			}) // }}}
+
+			it('d_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus({weeks: 1})
+
+				expect(d.getWeek()).to.equal(r.getWeek())
+			}) // }}}
+
+			it('d_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus({weeks: '1'})
+
+				expect(d.getWeek()).to.equal(r.getWeek())
+			}) // }}}
+
+			it('e_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::WEEKS, 1)
+
+				expect(d.getWeek()).to.equal(r.getWeek())
+			}) // }}}
+
+			it('e_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::WEEKS, '1')
+
+				expect(d.getWeek()).to.equal(r.getWeek())
+			}) // }}}
+
+			it('s_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('week', 1)
+
+				expect(d.getWeek()).to.equal(r.getWeek())
+			}) // }}}
+
+			it('s_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('week', '1')
+
+				expect(d.getWeek()).to.equal(r.getWeek())
+			}) // }}}
+		})
+
+		describe('day', func() {
+			const r = new Date(o)
+			r.setDay(r.getDay() + 1)
+
+			it('i', func() { // {{{
+				const d = new Date(o)
+
+				d.plusDays(1)
+
+				expect(d.getDay()).to.equal(r.getDay())
+			}) // }}}
+
+			it('s', func() { // {{{
+				const d = new Date(o)
+
+				d.plusDays('1')
+
+				expect(d.getDay()).to.equal(r.getDay())
+			}) // }}}
+
+			it('d_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus({days: 1})
+
+				expect(d.getDay()).to.equal(r.getDay())
+			}) // }}}
+
+			it('d_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus({days: '1'})
+
+				expect(d.getDay()).to.equal(r.getDay())
+			}) // }}}
+
+			it('e_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::DAYS, 1)
+
+				expect(d.getDay()).to.equal(r.getDay())
+			}) // }}}
+
+			it('e_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::DAYS, '1')
+
+				expect(d.getDay()).to.equal(r.getDay())
+			}) // }}}
+
+			it('s_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('day', 1)
+
+				expect(d.getDay()).to.equal(r.getDay())
+			}) // }}}
+
+			it('s_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('day', '1')
+
+				expect(d.getDay()).to.equal(r.getDay())
+			}) // }}}
+		})
+
+		describe('hour', func() {
+			const r = new Date(o)
+			r.setHour(r.getHour() + 1)
+
+			it('i', func() { // {{{
+				const d = new Date(o)
+
+				d.plusHours(1)
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+
+			it('s', func() { // {{{
+				const d = new Date(o)
+
+				d.plusHours('1')
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+
+			it('d_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus({hours: 1})
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+
+			it('d_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus({hours: '1'})
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+
+			it('e_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::HOURS, 1)
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+
+			it('e_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::HOURS, '1')
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+
+			it('s_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('hour', 1)
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+
+			it('s_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('hour', '1')
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+		})
+
+		describe('minute', func() {
+			const r = new Date(o)
+			r.setMinute(r.getMinute() + 1)
+
+			it('i', func() { // {{{
+				const d = new Date(o)
+
+				d.plusMinutes(1)
+
+				expect(d.getMinute()).to.equal(r.getMinute())
+			}) // }}}
+
+			it('s', func() { // {{{
+				const d = new Date(o)
+
+				d.plusMinutes('1')
+
+				expect(d.getMinute()).to.equal(r.getMinute())
+			}) // }}}
+
+			it('d_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus({minutes: 1})
+
+				expect(d.getMinute()).to.equal(r.getMinute())
+			}) // }}}
+
+			it('d_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus({minutes: '1'})
+
+				expect(d.getMinute()).to.equal(r.getMinute())
+			}) // }}}
+
+			it('e_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::MINUTES, 1)
+
+				expect(d.getMinute()).to.equal(r.getMinute())
+			}) // }}}
+
+			it('e_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::MINUTES, '1')
+
+				expect(d.getMinute()).to.equal(r.getMinute())
+			}) // }}}
+
+			it('s_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('minute', 1)
+
+				expect(d.getMinute()).to.equal(r.getMinute())
+			}) // }}}
+
+			it('s_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('minute', '1')
+
+				expect(d.getMinute()).to.equal(r.getMinute())
+			}) // }}}
+		})
+
+		describe('second', func() {
+			const r = new Date(o)
+			r.setSecond(r.getSecond() + 1)
+
+			it('i', func() { // {{{
+				const d = new Date(o)
+
+				d.plusSeconds(1)
+
+				expect(d.getSecond()).to.equal(r.getSecond())
+			}) // }}}
+
+			it('s', func() { // {{{
+				const d = new Date(o)
+
+				d.plusSeconds('1')
+
+				expect(d.getSecond()).to.equal(r.getSecond())
+			}) // }}}
+
+			it('d_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus({seconds: 1})
+
+				expect(d.getSecond()).to.equal(r.getSecond())
+			}) // }}}
+
+			it('d_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus({seconds: '1'})
+
+				expect(d.getSecond()).to.equal(r.getSecond())
+			}) // }}}
+
+			it('e_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::SECONDS, 1)
+
+				expect(d.getSecond()).to.equal(r.getSecond())
+			}) // }}}
+
+			it('e_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::SECONDS, '1')
+
+				expect(d.getSecond()).to.equal(r.getSecond())
+			}) // }}}
+
+			it('s_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('second', 1)
+
+				expect(d.getSecond()).to.equal(r.getSecond())
+			}) // }}}
+
+			it('s_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('second', '1')
+
+				expect(d.getSecond()).to.equal(r.getSecond())
+			}) // }}}
+		})
+
+		describe('millisecond', func() {
+			const r = new Date(o)
+			r.setMillisecond(r.getMillisecond() + 1)
+
+			it('i', func() { // {{{
+				const d = new Date(o)
+
+				d.plusMilliseconds(1)
+
+				expect(d.getMillisecond()).to.equal(r.getMillisecond())
+			}) // }}}
+
+			it('s', func() { // {{{
+				const d = new Date(o)
+
+				d.plusMilliseconds('1')
+
+				expect(d.getMillisecond()).to.equal(r.getMillisecond())
+			}) // }}}
+
+			it('d_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus({milliseconds: 1})
+
+				expect(d.getMillisecond()).to.equal(r.getMillisecond())
+			}) // }}}
+
+			it('d_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus({milliseconds: '1'})
+
+				expect(d.getMillisecond()).to.equal(r.getMillisecond())
+			}) // }}}
+
+			it('e_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::MILLISECONDS, 1)
+
+				expect(d.getMillisecond()).to.equal(r.getMillisecond())
+			}) // }}}
+
+			it('e_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::MILLISECONDS, '1')
+
+				expect(d.getMillisecond()).to.equal(r.getMillisecond())
+			}) // }}}
+
+			it('s_i', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('millisecond', 1)
+
+				expect(d.getMillisecond()).to.equal(r.getMillisecond())
+			}) // }}}
+
+			it('s_s', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('millisecond', '1')
+
+				expect(d.getMillisecond()).to.equal(r.getMillisecond())
+			}) // }}}
+		})
+
+		describe('millennia', func() {
+			const r = new Date(o)
+			r.setYear(r.getYear() + 1_000)
+
+			it('enu', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::MILLENNIA, 1)
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+
+			it('str', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('millennia', 1)
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+		})
+
+		describe('centuries', func() {
+			const r = new Date(o)
+			r.setYear(r.getYear() + 100)
+
+			it('enu', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::CENTURIES, 1)
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+
+			it('str', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('centuries', 1)
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+		})
+
+		describe('decades', func() {
+			const r = new Date(o)
+			r.setYear(r.getYear() + 10)
+
+			it('enu', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::DECADES, 1)
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+
+			it('str', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('decades', 1)
+
+				expect(d.getYear()).to.equal(r.getYear())
+			}) // }}}
+		})
+
+		describe('semesters', func() {
+			const r = new Date(o)
+			r.setMonth(r.getMonth() + 6)
+
+			it('enu', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::SEMESTERS, 1)
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+
+			it('str', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('semesters', 1)
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+		})
+
+		describe('quarters', func() {
+			const r = new Date(o)
+			r.setMonth(r.getMonth() + 3)
+
+			it('enu', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::QUARTERS, 1)
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+
+			it('str', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('quarters', 1)
+
+				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+		})
+
+		describe('half_days', func() {
+			const r = new Date(o)
+			r.setHour(r.getHour() + 12)
+
+			it('enu', func() { // {{{
+				const d = new Date(o)
+
+				d.plus(TimeUnit::HALF_DAYS, 1)
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+
+			it('str', func() { // {{{
+				const d = new Date(o)
+
+				d.plus('half_days', 1)
+
+				expect(d.getHour()).to.equal(r.getHour())
+			}) // }}}
+		})
 	}) // }}}
 
 	it('getDayOfYear 2000-1-1', func() { // {{{
@@ -385,120 +1682,198 @@ describe('manipulate', func() {
 		const d = Date.create(2000, 1, 1).setDayOfYear(66)
 
 		expect(d.getMonth()).to.equal(2)
-		expect(d.getDayOfMonth()).to.equal(6)
+		expect(d.getDay()).to.equal(6)
 	}) // }}}
 
-	it('future 2000-1-1 saturday', func() { // {{{
-		const d = Date.create(2000, 1, 1).future('saturday')
+	it('setDay', func() { // {{{
+		const d = Date.create(2000, 1, 1).setDay(15)
 
-		expect(d.getYear()).to.equal(2000)
-		expect(d.getMonth()).to.equal(1)
-		expect(d.getDayOfMonth()).to.equal(8)
+		expect(d.getDay()).to.equal(15)
 	}) // }}}
 
-	it('future 2000-1-1 sunday', func() { // {{{
-		const d = Date.create(2000, 1, 1).future('sunday')
+	describe('set', func() { // {{{
+		it('month enu', func() { // {{{
+			const d = new Date().set(DateField::MONTH, 3)
 
-		expect(d.getYear()).to.equal(2000)
-		expect(d.getMonth()).to.equal(1)
-		expect(d.getDayOfMonth()).to.equal(2)
+			expect(d.getMonth()).to.equal(3)
+		}) // }}}
+
+		it('month str', func() { // {{{
+			const d = new Date().set('month', 3)
+
+			expect(d.getMonth()).to.equal(3)
+		}) // }}}
+
+		it('dictionary', func() { // {{{
+			const d = new Date().set({
+				month: 5,
+				day: 12,
+				hour: 6
+			})
+
+			expect(d.getMonth()).to.equal(5)
+			expect(d.getDay()).to.equal(12)
+			expect(d.getHour()).to.equal(6)
+		}) // }}}
 	}) // }}}
 
-	it('future 2000-1-3 saturday', func() { // {{{
-		const d = Date.create(2000, 1, 3).future('saturday')
+	describe('startOf', func() { // {{{
+		const r = new Date(o)
 
-		expect(d.getYear()).to.equal(2000)
-		expect(d.getMonth()).to.equal(1)
-		expect(d.getDayOfMonth()).to.equal(8)
-	}) // }}}
+		describe('year', func() {
+			it('enu', func() { // {{{
+				const d = new Date().startOf(DateField::YEAR)
 
-	it('future 2000-1-3 sunday', func() { // {{{
-		const d = Date.create(2000, 1, 3).future('sunday')
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(1)
+				expect(d.getDay()).to.equal(1)
+				expect(d.getHour()).to.equal(0)
+				expect(d.getMinute()).to.equal(0)
+				expect(d.getSecond()).to.equal(0)
+				expect(d.getMillisecond()).to.equal(0)
+			}) // }}}
 
-		expect(d.getYear()).to.equal(2000)
-		expect(d.getMonth()).to.equal(1)
-		expect(d.getDayOfMonth()).to.equal(9)
-	}) // }}}
+			it('str', func() { // {{{
+				const d = new Date().startOf('year')
 
-	it('futureOrPresent 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 1, 1).futureOrPresent('saturday')
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(1)
+				expect(d.getDay()).to.equal(1)
+				expect(d.getHour()).to.equal(0)
+				expect(d.getMinute()).to.equal(0)
+				expect(d.getSecond()).to.equal(0)
+				expect(d.getMillisecond()).to.equal(0)
+			}) // }}}
+		})
 
-		expect(d.getYear()).to.equal(2000)
-		expect(d.getMonth()).to.equal(1)
-		expect(d.getDayOfMonth()).to.equal(1)
-	}) // }}}
+		describe('month', func() {
+			it('enu', func() { // {{{
+				const d = new Date().startOf(DateField::MONTH)
 
-	it('past 2000-1-1 saturday', func() { // {{{
-		const d = Date.create(2000, 1, 1).past('saturday')
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(1)
+				expect(d.getHour()).to.equal(0)
+				expect(d.getMinute()).to.equal(0)
+				expect(d.getSecond()).to.equal(0)
+				expect(d.getMillisecond()).to.equal(0)
+			}) // }}}
 
-		expect(d.getYear()).to.equal(1999)
-		expect(d.getMonth()).to.equal(12)
-		expect(d.getDayOfMonth()).to.equal(25)
-	}) // }}}
+			it('str', func() { // {{{
+				const d = new Date().startOf('month')
 
-	it('past 2000-1-3 saturday', func() { // {{{
-		const d = Date.create(2000, 1, 3).past('saturday')
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(1)
+				expect(d.getHour()).to.equal(0)
+				expect(d.getMinute()).to.equal(0)
+				expect(d.getSecond()).to.equal(0)
+				expect(d.getMillisecond()).to.equal(0)
+			}) // }}}
+		})
 
-		expect(d.getYear()).to.equal(2000)
-		expect(d.getMonth()).to.equal(1)
-		expect(d.getDayOfMonth()).to.equal(1)
-	}) // }}}
+		describe('day', func() {
+			it('enu', func() { // {{{
+				const d = new Date().startOf(DateField::DAY)
 
-	it('past 2000-1-3 sunday', func() { // {{{
-		const d = Date.create(2000, 1, 3).past('sunday')
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(r.getDay())
+				expect(d.getHour()).to.equal(0)
+				expect(d.getMinute()).to.equal(0)
+				expect(d.getSecond()).to.equal(0)
+				expect(d.getMillisecond()).to.equal(0)
+			}) // }}}
 
-		expect(d.getYear()).to.equal(2000)
-		expect(d.getMonth()).to.equal(1)
-		expect(d.getDayOfMonth()).to.equal(2)
-	}) // }}}
+			it('str', func() { // {{{
+				const d = new Date().startOf('day')
 
-	it('pastOrPresent 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 1, 1).pastOrPresent('saturday')
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(r.getDay())
+				expect(d.getHour()).to.equal(0)
+				expect(d.getMinute()).to.equal(0)
+				expect(d.getSecond()).to.equal(0)
+				expect(d.getMillisecond()).to.equal(0)
+			}) // }}}
+		})
 
-		expect(d.getYear()).to.equal(2000)
-		expect(d.getMonth()).to.equal(1)
-		expect(d.getDayOfMonth()).to.equal(1)
-	}) // }}}
+		describe('hour', func() {
+			it('enu', func() { // {{{
+				const d = new Date().startOf(DateField::HOUR)
 
-	it('getDayOfMonth 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 1, 1)
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(r.getDay())
+				expect(d.getHour()).to.equal(r.getHour())
+				expect(d.getMinute()).to.equal(0)
+				expect(d.getSecond()).to.equal(0)
+				expect(d.getMillisecond()).to.equal(0)
+			}) // }}}
 
-		expect(d.getDayOfMonth()).to.equal(1)
-	}) // }}}
+			it('str', func() { // {{{
+				const d = new Date().startOf('hour')
 
-	it('getDaysInMonth 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 1, 1)
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(r.getDay())
+				expect(d.getHour()).to.equal(r.getHour())
+				expect(d.getMinute()).to.equal(0)
+				expect(d.getSecond()).to.equal(0)
+				expect(d.getMillisecond()).to.equal(0)
+			}) // }}}
+		})
 
-		expect(d.getDaysInMonth()).to.equal(31)
-	}) // }}}
+		describe('minute', func() {
+			it('enu', func() { // {{{
+				const d = new Date().startOf(DateField::MINUTE)
 
-	it('getDaysInYear 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 1, 1)
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(r.getDay())
+				expect(d.getHour()).to.equal(r.getHour())
+				expect(d.getMinute()).to.equal(r.getMinute())
+				expect(d.getSecond()).to.equal(0)
+				expect(d.getMillisecond()).to.equal(0)
+			}) // }}}
 
-		expect(d.getDaysInYear()).to.equal(366)
-	}) // }}}
+			it('str', func() { // {{{
+				const d = new Date().startOf('minute')
 
-	it('getDaysInYear 2003-1-1', func() { // {{{
-		const d = Date.create(2003, 1, 1)
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(r.getDay())
+				expect(d.getHour()).to.equal(r.getHour())
+				expect(d.getMinute()).to.equal(r.getMinute())
+				expect(d.getSecond()).to.equal(0)
+				expect(d.getMillisecond()).to.equal(0)
+			}) // }}}
+		})
 
-		expect(d.getDaysInYear()).to.equal(365)
-	}) // }}}
+		describe('second', func() {
+			it('enu', func() { // {{{
+				const d = new Date().startOf(DateField::SECOND)
 
-	it('getDaysInYear 2002-1-1', func() { // {{{
-		const d = Date.create(2002, 1, 1)
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(r.getDay())
+				expect(d.getHour()).to.equal(r.getHour())
+				expect(d.getMinute()).to.equal(r.getMinute())
+				expect(d.getSecond()).to.equal(r.getSecond())
+				expect(d.getMillisecond()).to.equal(0)
+			}) // }}}
 
-		expect(d.getDaysInYear()).to.equal(365)
-	}) // }}}
+			it('str', func() { // {{{
+				const d = new Date().startOf('second')
 
-	it('isLeapYear 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 1, 1)
-
-		expect(d.isLeapYear()).to.be.true
-	}) // }}}
-
-	it('setDayOfMonth', func() { // {{{
-		const d = Date.create(2000, 1, 1).setDayOfMonth(15)
-
-		expect(d.getDayOfMonth()).to.equal(15)
+				expect(d.getYear()).to.equal(r.getYear())
+				expect(d.getMonth()).to.equal(r.getMonth())
+				expect(d.getDay()).to.equal(r.getDay())
+				expect(d.getHour()).to.equal(r.getHour())
+				expect(d.getMinute()).to.equal(r.getMinute())
+				expect(d.getSecond()).to.equal(r.getSecond())
+				expect(d.getMillisecond()).to.equal(0)
+			}) // }}}
+		})
 	}) // }}}
 })

@@ -48,7 +48,7 @@
 		"push-coverage": "npm run test-coverage && cat ./coverage/lcov.info | node ./node_modules/coveralls/bin/coveralls.js",
 		"test": "npm run test-mocha",
 		"test-coverage": "node node_modules/@zokugun/istanbul.cover/src/cli.js",
-		"test-mocha": "mocha --colors --check-leaks --require kaoscript/register --reporter spec test/*.ks"
+		"test-mocha": "mocha --colors --check-leaks --require kaoscript/register --reporter list test/*.ks"
 	},
 	"keywords": [
 		"kaoscript",
