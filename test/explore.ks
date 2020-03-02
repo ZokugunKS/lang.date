@@ -42,10 +42,15 @@ describe('explore', func() {
 		expect(d.getDaysInYear()).to.equal(365)
 	}) // }}}
 
+	it('getDayOfYear 2000-1-1', func() { // {{{
+		const d = Date.create(2000, 1, 1)
+
+		expect(d.getDayOfYear()).to.equal(1)
+	}) // }}}
+
 	it('isInLeapYear 2000-1-1', func() { // {{{
 		const d = Date.create(2000, 1, 1)
 
 		expect(d.isInLeapYear()).to.be.true
 	}) // }}}
-
 })

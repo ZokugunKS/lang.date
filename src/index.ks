@@ -58,6 +58,60 @@ enum DateField {
 	} // }}}
 }
 
+enum MonthField {
+	JANUARY = 1
+	FEBRUARY
+	MARCH
+	APRIL
+	MAY
+	JUNE
+	JULY
+	AUGUST
+	SEPTEMBER
+	OCTOBER
+	NOVEMBER
+	DECEMBER
+
+	static fromString(value: String): MonthField ~ ParseError { // {{{
+		switch value[0] {
+			'a' => {
+				if value == 'apr' | 'april' {
+					return MonthField::APRIL
+				}
+				else if value == 'aug' | 'august' {
+					return MonthField::AUGUST
+				}
+			}
+			'd' => return MonthField::DECEMBER if value == 'dec' | 'december'
+			'f' => return MonthField::FEBRUARY if value == 'feb' | 'february'
+			'j' => {
+				if value == 'jan' | 'january' {
+					return MonthField::JANUARY
+				}
+				else if value == 'jun' | 'june' {
+					return MonthField::JUNE
+				}
+				else if value == 'jul' | 'july' {
+					return MonthField::JULY
+				}
+			}
+			'm' => {
+				if value == 'mar' | 'march' {
+					return MonthField::MARCH
+				}
+				else if value == 'may' {
+					return MonthField::MAY
+				}
+			}
+			'n' => return MonthField::NOVEMBER if value == 'nov' | 'november'
+			'o' => return MonthField::OCTOBER if value == 'oct' | 'october'
+			's' => return MonthField::SEPTEMBER if value == 'sep' | 'september'
+		}
+
+		throw new ParseError(`"\(value)" can't be converted to a WeekField`)
+	} // }}}
+}
+
 enum TimeUnit {
 	CENTURIES
 	DAYS
@@ -125,13 +179,13 @@ enum TimeUnit {
 }
 
 enum WeekField {
-	SUNDAY
-	MONDAY
+	MONDAY = 1
 	TUESDAY
 	WEDNESDAY
 	THURSDAY
 	FRIDAY
 	SATURDAY
+	SUNDAY
 
 	static fromString(value: String): WeekField ~ ParseError { // {{{
 		switch value[0] {
@@ -155,6 +209,7 @@ enum WeekField {
 			}
 			'w' => return WeekField::WEDNESDAY if value == 'we' | 'wed' | 'wednesday'
 		}
+
 		throw new ParseError(`"\(value)" can't be converted to a WeekField`)
 	} // }}}
 }
@@ -203,6 +258,7 @@ impl Date {
 
 			return new Date()
 		} // }}}
+		getDaysInMonth(year: Number, month: Number): Number => month == 2 && Date.isInLeapYear(year) ? 29 : $months[month - 1]
 		getDaysInYear(year: Number): Number => Date.isInLeapYear(year) ? 366 : 365
 		getTime(value: Date): Number => value.getTime()
 		getTime(value: Object): Number { // {{{
@@ -433,15 +489,7 @@ impl Date {
 	getDayOfYear(): Number { // {{{
 		return Math.ceil((this.clone().midnight().getTime() - new Date(this.getYear(), 1, 1).getTime()) / 86400000) + 1
 	} // }}}
-	getDaysInMonth(): Number { // {{{
-		const m = this.getMonth()
-		if m == 2 && this.isInLeapYear() {
-			return 29
-		}
-		else {
-			return $months[m - 1]
-		}
-	} // }}}
+	getDaysInMonth(): Number => Date.getDaysInMonth(this.getYear(), this.getMonth())
 	getDaysInYear(): Number => Date.getDaysInYear(this.getYear())
 	getHour(): Number => this.getUTCHours()
 	getMillisecond(): Number => this.getUTCMilliseconds()
@@ -591,12 +639,12 @@ impl Date {
 			TimeUnit::MILLENNIA		=> this.setUTCFullYear(this.getUTCFullYear() - (value * 1_000))
 			TimeUnit::MILLISECONDS	=> this.setUTCMilliseconds(this.getUTCMilliseconds() - value)
 			TimeUnit::MINUTES		=> this.setUTCMinutes(this.getUTCMinutes() - value)
-			TimeUnit::MONTHS		=> this.setUTCMonth(this.getUTCMonth() - value)
+			TimeUnit::MONTHS		=> this.minusMonths(value)
 			TimeUnit::QUARTERS		=> this.setUTCMonth(this.getUTCMonth() - (value * 3))
 			TimeUnit::SECONDS		=> this.setUTCSeconds(this.getUTCSeconds() - value)
 			TimeUnit::SEMESTERS		=> this.setUTCMonth(this.getUTCMonth() - (value * 6))
 			TimeUnit::WEEKS			=> this.setUTCDate(this.getUTCDate() - (value * 7))
-			TimeUnit::YEARS			=> this.setUTCFullYear(this.getUTCFullYear() - value)
+			TimeUnit::YEARS			=> this.minusYears(value)
 		}
 	} // }}}
 	minus(unit: TimeUnit, value: String): this ~ ParseError => this.minus(unit, value.toInt())
@@ -624,7 +672,32 @@ impl Date {
 	} // }}}
 	minusMinutes(value: String): this ~ ParseError => this.minusMinutes(value.toInt())
 	minusMonths(value: Number): this { // {{{
-		this.setUTCMonth(this.getUTCMonth() - value)
+		return this if value == 0
+		return this.plusMonths(-value) if value < 0
+
+		auto days = 0
+		auto month = this.getMonth()
+		auto year = this.getYear()
+
+		for const i from 0 til value - 1 {
+			if --month < 1 {
+				month = 12
+				--year
+			}
+
+			days += Date.getDaysInMonth(year, month)
+		}
+
+		const dim = month == 1 ? Date.getDaysInMonth(year - 1, 12) : Date.getDaysInMonth(year, month - 1)
+		const d = this.getDay() - dim
+		if d <= 0 {
+			days += dim
+		}
+		else {
+			days += dim + d
+		}
+
+		this.setTime(this.getTime() - (days * 86_400_000))
 	} // }}}
 	minusMonths(value: String): this ~ ParseError => this.minusMonths(value.toInt())
 	minusSeconds(value: Number): this { // {{{
@@ -636,7 +709,19 @@ impl Date {
 	} // }}}
 	minusWeeks(value: String): this ~ ParseError => this.minusWeeks(value.toInt())
 	minusYears(value: Number): this { // {{{
-		this.setUTCFullYear(this.getUTCFullYear() - value)
+		return this if value == 0
+		return this.plusYears(-value) if value < 0
+
+		auto days = 0
+
+		const month = this.getMonth()
+		const year = this.getYear()
+
+		for const i from 0 til value {
+			days += Date.getDaysInYear(year - i)
+		}
+
+		this.setTime(this.getTime() - (days * 86_400_000))
 	} // }}}
 	minusYears(value: String): this ~ ParseError => this.minusYears(value.toInt())
 	noon(): this { // {{{
@@ -674,12 +759,12 @@ impl Date {
 			TimeUnit::MILLENNIA		=> this.setUTCFullYear(this.getUTCFullYear() + (value * 1_000))
 			TimeUnit::MILLISECONDS	=> this.setUTCMilliseconds(this.getUTCMilliseconds() + value)
 			TimeUnit::MINUTES		=> this.setUTCMinutes(this.getUTCMinutes() + value)
-			TimeUnit::MONTHS		=> this.setUTCMonth(this.getUTCMonth() + value)
+			TimeUnit::MONTHS		=> this.plusMonths(value)
 			TimeUnit::QUARTERS		=> this.setUTCMonth(this.getUTCMonth() + (value * 3))
 			TimeUnit::SECONDS		=> this.setUTCSeconds(this.getUTCSeconds() + value)
 			TimeUnit::SEMESTERS		=> this.setUTCMonth(this.getUTCMonth() + (value * 6))
 			TimeUnit::WEEKS			=> this.setUTCDate(this.getUTCDate() + (value * 7))
-			TimeUnit::YEARS			=> this.setUTCFullYear(this.getUTCFullYear() + value)
+			TimeUnit::YEARS			=> this.plusYears(value)
 		}
 	} // }}}
 	plus(unit: TimeUnit, value: String): this ~ ParseError => this.plus(unit, value.toInt())
@@ -707,7 +792,32 @@ impl Date {
 	} // }}}
 	plusMinutes(value: String): this ~ ParseError => this.plusMinutes(value.toInt())
 	plusMonths(value: Number): this { // {{{
-		this.setUTCMonth(this.getUTCMonth() + value)
+		return this if value == 0
+		return this.minusMonths(-value) if value < 0
+
+		auto days = 0
+		auto month = this.getMonth()
+		auto year = this.getYear()
+
+		for const i from 0 til value - 1 {
+			days += Date.getDaysInMonth(year, month)
+
+			if ++month > 12 {
+				month = 1
+				++year
+			}
+		}
+
+		const dim = month == 12 ? Date.getDaysInMonth(year + 1, 1) : Date.getDaysInMonth(year, month + 1)
+		const d = this.getDay() - dim
+		if d <= 0 {
+			days += Date.getDaysInMonth(year, month)
+		}
+		else {
+			days += Date.getDaysInMonth(year, month) - d
+		}
+
+		this.setTime(this.getTime() + (days * 86_400_000))
 	} // }}}
 	plusMonths(value: String): this ~ ParseError => this.plusMonths(value.toInt())
 	plusSeconds(value: Number): this { // {{{
@@ -719,41 +829,33 @@ impl Date {
 	} // }}}
 	plusWeeks(value: String): this ~ ParseError => this.plusWeeks(value.toInt())
 	plusYears(value: Number): this { // {{{
-		this.setUTCFullYear(this.getUTCFullYear() + value)
+		return this if value == 0
+		return this.minusYears(-value) if value < 0
+
+		auto days = 0
+
+		const month = this.getMonth()
+		const year = month > 2 || (month == 2 && this.getDay() == 29) ? this.getYear() + 1 : this.getYear()
+
+		for const i from 0 til value {
+			days += Date.getDaysInYear(year + i)
+		}
+
+		this.setTime(this.getTime() + (days * 86_400_000))
 	} // }}}
 	plusYears(value: String): this ~ ParseError => this.plusYears(value.toInt())
 	set(field: DateField, value: Number): this { // {{{
 		switch field {
-			DateField::DAY => {
-				this.setUTCDate(value)
-			}
-			DateField::DAY_OF_WEEK => {
-				this.setDayOfWeek(value)
-			}
-			DateField::DAY_OF_YEAR => {
-				this.setDayOfYear(value)
-			}
-			DateField::HOUR => {
-				this.setUTCHours(value)
-			}
-			DateField::MONTH => {
-				this.setUTCMonth(value - 1)
-			}
-			DateField::MILLISECOND => {
-				this.setUTCMilliseconds(value)
-			}
-			DateField::MINUTE => {
-				this.setUTCMinutes(value)
-			}
-			DateField::SECOND => {
-				this.setUTCSeconds(value)
-			}
-			DateField::WEEK => {
-				this.setWeek(value)
-			}
-			DateField::YEAR => {
-				this.setUTCFullYear(value)
-			}
+			DateField::DAY			=> this.setUTCDate(value)
+			DateField::DAY_OF_WEEK	=> this.setDayOfWeek(value)
+			DateField::DAY_OF_YEAR	=> this.setDayOfYear(value)
+			DateField::HOUR			=> this.setUTCHours(value)
+			DateField::MONTH		=> this.setUTCMonth(value - 1)
+			DateField::MILLISECOND	=> this.setUTCMilliseconds(value)
+			DateField::MINUTE		=> this.setUTCMinutes(value)
+			DateField::SECOND		=> this.setUTCSeconds(value)
+			DateField::WEEK			=> this.setWeek(value)
+			DateField::YEAR			=> this.setUTCFullYear(value)
 		}
 	} // }}}
 	set(field: DateField, value: String): this ~ ParseError => this.set(field, value.toInt())
@@ -771,9 +873,16 @@ impl Date {
 	setDayOfWeek(value: Number): this { // {{{
 		this.plusDays(value - this.getDayOfWeek())
 	} // }}}
-	setDayOfWeek(value: String): this ~ ParseError => this.setDayOfWeek(value.toInt())
+	setDayOfWeek(value: String): this ~ ParseError { // {{{
+		if const value = value.toIntOrNull() {
+			return this.setDayOfWeek(value)
+		}
+		else {
+			return this.setDayOfWeek(WeekField.fromString(value))
+		}
+	} // }}}
 	setDayOfYear(value: Number): this { // {{{
-		let m = 0
+		let m = 1
 		for const i from 0 til 12 {
 			if i == 1 {
 				if this.isInLeapYear() {
@@ -816,7 +925,14 @@ impl Date {
 	setMonth(value: Number): this { // {{{
 		this.setUTCMonth(value - 1)
 	} // }}}
-	setMonth(value: String): this ~ ParseError => this.setMonth(value.toInt())
+	setMonth(value: String): this ~ ParseError { // {{{
+		if const value = value.toIntOrNull() {
+			return this.setMonth(value)
+		}
+		else {
+			return this.setMonth(MonthField.fromString(value))
+		}
+	} // }}}
 	setSecond(value: Number): this { // {{{
 		this.setUTCSeconds(value)
 	} // }}}
@@ -884,4 +1000,4 @@ impl Date {
 	toString(): String => this.toISOString()
 }
 
-export Date, DateField, TimeUnit, WeekField, ParseError
+export Date, DateField, MonthField, TimeUnit, WeekField, ParseError

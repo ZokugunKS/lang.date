@@ -1060,6 +1060,26 @@ describe('manipulate', func() {
 
 				expect(d.getYear()).to.equal(r.getYear())
 			}) // }}}
+
+			it('end 29.28 +1', func() { // {{{
+				const d = new Date(2008, 2, 29, 12, 0, 0)
+
+				expect(d.toString()).to.equal('2008-02-29T12:00:00.000Z')
+
+				d.plus(TimeUnit::YEARS, 1)
+
+				expect(d.toString()).to.equal('2009-02-28T12:00:00.000Z')
+			}) // }}}
+
+			it('end 29.28 +4', func() { // {{{
+				const d = new Date(2008, 2, 29, 12, 0, 0)
+
+				expect(d.toString()).to.equal('2008-02-29T12:00:00.000Z')
+
+				d.plus(TimeUnit::YEARS, 4)
+
+				expect(d.toString()).to.equal('2012-02-29T12:00:00.000Z')
+			}) // }}}
 		})
 
 		describe('month', func() {
@@ -1128,6 +1148,86 @@ describe('manipulate', func() {
 				d.plus('month', '1')
 
 				expect(d.getMonth()).to.equal(r.getMonth())
+			}) // }}}
+
+			it('end 30.30 +1', func() { // {{{
+				const d = new Date(2008, 5, 30, 12, 0, 0)
+
+				expect(d.toString()).to.equal('2008-05-30T12:00:00.000Z')
+
+				d.plus(TimeUnit::MONTHS, 1)
+
+				expect(d.toString()).to.equal('2008-06-30T12:00:00.000Z')
+			}) // }}}
+
+			it('end 31.30 +1', func() { // {{{
+				const d = new Date(2008, 5, 31, 12, 0, 0)
+
+				expect(d.toString()).to.equal('2008-05-31T12:00:00.000Z')
+
+				d.plus(TimeUnit::MONTHS, 1)
+
+				expect(d.toString()).to.equal('2008-06-30T12:00:00.000Z')
+			}) // }}}
+
+			it('end 31.30 +4', func() { // {{{
+				const d = new Date(2008, 5, 31, 12, 0, 0)
+
+				expect(d.toString()).to.equal('2008-05-31T12:00:00.000Z')
+
+				d.plus(TimeUnit::MONTHS, 4)
+
+				expect(d.toString()).to.equal('2008-09-30T12:00:00.000Z')
+			}) // }}}
+
+			it('end 29.29 +11', func() { // {{{
+				const d = new Date(2008, 2, 29, 12, 0, 0)
+
+				expect(d.toString()).to.equal('2008-02-29T12:00:00.000Z')
+
+				d.plus(TimeUnit::MONTHS, 11)
+
+				expect(d.toString()).to.equal('2009-01-29T12:00:00.000Z')
+			}) // }}}
+
+			it('end 29.28 +12', func() { // {{{
+				const d = new Date(2008, 2, 29, 12, 0, 0)
+
+				expect(d.toString()).to.equal('2008-02-29T12:00:00.000Z')
+
+				d.plus(TimeUnit::MONTHS, 12)
+
+				expect(d.toString()).to.equal('2009-02-28T12:00:00.000Z')
+			}) // }}}
+
+			it('end 31.29 +1', func() { // {{{
+				const d = new Date(2008, 1, 31, 12, 0, 0)
+
+				expect(d.toString()).to.equal('2008-01-31T12:00:00.000Z')
+
+				d.plus(TimeUnit::MONTHS, 1)
+
+				expect(d.toString()).to.equal('2008-02-29T12:00:00.000Z')
+			}) // }}}
+
+			it('end 31.29 +13', func() { // {{{
+				const d = new Date(2007, 1, 31, 12, 0, 0)
+
+				expect(d.toString()).to.equal('2007-01-31T12:00:00.000Z')
+
+				d.plus(TimeUnit::MONTHS, 13)
+
+				expect(d.toString()).to.equal('2008-02-29T12:00:00.000Z')
+			}) // }}}
+
+			it('end 31.28 +1', func() { // {{{
+				const d = new Date(2006, 1, 31, 12, 0, 0)
+
+				expect(d.toString()).to.equal('2006-01-31T12:00:00.000Z')
+
+				d.plus(TimeUnit::MONTHS, 1)
+
+				expect(d.toString()).to.equal('2006-02-28T12:00:00.000Z')
 			}) // }}}
 		})
 
@@ -1672,25 +1772,6 @@ describe('manipulate', func() {
 		})
 	}) // }}}
 
-	it('getDayOfYear 2000-1-1', func() { // {{{
-		const d = Date.create(2000, 1, 1)
-
-		expect(d.getDayOfYear()).to.equal(1)
-	}) // }}}
-
-	it('setDayOfYear', func() { // {{{
-		const d = Date.create(2000, 1, 1).setDayOfYear(66)
-
-		expect(d.getMonth()).to.equal(2)
-		expect(d.getDay()).to.equal(6)
-	}) // }}}
-
-	it('setDay', func() { // {{{
-		const d = Date.create(2000, 1, 1).setDay(15)
-
-		expect(d.getDay()).to.equal(15)
-	}) // }}}
-
 	describe('set', func() { // {{{
 		it('month enu', func() { // {{{
 			const d = new Date().set(DateField::MONTH, 3)
@@ -1717,12 +1798,77 @@ describe('manipulate', func() {
 		}) // }}}
 	}) // }}}
 
+	it('setDayOfYear', func() { // {{{
+		const d = Date.create(2000, 1, 1).setDayOfYear(66)
+
+		expect(d.getMonth()).to.equal(3)
+		expect(d.getDay()).to.equal(6)
+	}) // }}}
+
+	it('setDay', func() { // {{{
+		const d = Date.create(2000, 1, 1).setDay(15)
+
+		expect(d.getDay()).to.equal(15)
+	}) // }}}
+
+	describe('setMonth', func() {
+		it('i', func() { // {{{
+			const d = new Date().setMonth(3)
+
+			expect(d.getMonth()).to.equal(3)
+		}) // }}}
+
+		it('e', func() { // {{{
+			const d = new Date().setMonth(MonthField::MARCH)
+
+			expect(d.getMonth()).to.equal(3)
+		}) // }}}
+
+		it('s_i', func() { // {{{
+			const d = new Date().setMonth('3')
+
+			expect(d.getMonth()).to.equal(3)
+		}) // }}}
+
+		it('s_e', func() { // {{{
+			const d = new Date().setMonth('march')
+
+			expect(d.getMonth()).to.equal(3)
+		}) // }}}
+	})
+
+	describe('setDayOfWeek', func() {
+		it('i', func() { // {{{
+			const d = new Date(2000, 1, 1).setDayOfWeek(3)
+
+			expect(d.getDayOfWeek()).to.equal(3)
+		}) // }}}
+
+		it('e', func() { // {{{
+			const d = new Date(2000, 1, 1).setDayOfWeek(WeekField::WEDNESDAY)
+
+			expect(d.getDayOfWeek()).to.equal(3)
+		}) // }}}
+
+		it('s_i', func() { // {{{
+			const d = new Date(2000, 1, 1).setDayOfWeek('3')
+
+			expect(d.getDayOfWeek()).to.equal(3)
+		}) // }}}
+
+		it('s_e', func() { // {{{
+			const d = new Date(2000, 1, 1).setDayOfWeek('wednesday')
+
+			expect(d.getDayOfWeek()).to.equal(3)
+		}) // }}}
+	})
+
 	describe('startOf', func() { // {{{
 		const r = new Date(o)
 
 		describe('year', func() {
 			it('enu', func() { // {{{
-				const d = new Date().startOf(DateField::YEAR)
+				const d = new Date(o).startOf(DateField::YEAR)
 
 				expect(d.getYear()).to.equal(r.getYear())
 				expect(d.getMonth()).to.equal(1)
@@ -1734,7 +1880,7 @@ describe('manipulate', func() {
 			}) // }}}
 
 			it('str', func() { // {{{
-				const d = new Date().startOf('year')
+				const d = new Date(o).startOf('year')
 
 				expect(d.getYear()).to.equal(r.getYear())
 				expect(d.getMonth()).to.equal(1)
@@ -1748,7 +1894,7 @@ describe('manipulate', func() {
 
 		describe('month', func() {
 			it('enu', func() { // {{{
-				const d = new Date().startOf(DateField::MONTH)
+				const d = new Date(o).startOf(DateField::MONTH)
 
 				expect(d.getYear()).to.equal(r.getYear())
 				expect(d.getMonth()).to.equal(r.getMonth())
@@ -1760,7 +1906,7 @@ describe('manipulate', func() {
 			}) // }}}
 
 			it('str', func() { // {{{
-				const d = new Date().startOf('month')
+				const d = new Date(o).startOf('month')
 
 				expect(d.getYear()).to.equal(r.getYear())
 				expect(d.getMonth()).to.equal(r.getMonth())
@@ -1774,7 +1920,7 @@ describe('manipulate', func() {
 
 		describe('day', func() {
 			it('enu', func() { // {{{
-				const d = new Date().startOf(DateField::DAY)
+				const d = new Date(o).startOf(DateField::DAY)
 
 				expect(d.getYear()).to.equal(r.getYear())
 				expect(d.getMonth()).to.equal(r.getMonth())
@@ -1786,7 +1932,7 @@ describe('manipulate', func() {
 			}) // }}}
 
 			it('str', func() { // {{{
-				const d = new Date().startOf('day')
+				const d = new Date(o).startOf('day')
 
 				expect(d.getYear()).to.equal(r.getYear())
 				expect(d.getMonth()).to.equal(r.getMonth())
@@ -1800,7 +1946,7 @@ describe('manipulate', func() {
 
 		describe('hour', func() {
 			it('enu', func() { // {{{
-				const d = new Date().startOf(DateField::HOUR)
+				const d = new Date(o).startOf(DateField::HOUR)
 
 				expect(d.getYear()).to.equal(r.getYear())
 				expect(d.getMonth()).to.equal(r.getMonth())
@@ -1812,7 +1958,7 @@ describe('manipulate', func() {
 			}) // }}}
 
 			it('str', func() { // {{{
-				const d = new Date().startOf('hour')
+				const d = new Date(o).startOf('hour')
 
 				expect(d.getYear()).to.equal(r.getYear())
 				expect(d.getMonth()).to.equal(r.getMonth())
@@ -1826,7 +1972,7 @@ describe('manipulate', func() {
 
 		describe('minute', func() {
 			it('enu', func() { // {{{
-				const d = new Date().startOf(DateField::MINUTE)
+				const d = new Date(o).startOf(DateField::MINUTE)
 
 				expect(d.getYear()).to.equal(r.getYear())
 				expect(d.getMonth()).to.equal(r.getMonth())
@@ -1838,7 +1984,7 @@ describe('manipulate', func() {
 			}) // }}}
 
 			it('str', func() { // {{{
-				const d = new Date().startOf('minute')
+				const d = new Date(o).startOf('minute')
 
 				expect(d.getYear()).to.equal(r.getYear())
 				expect(d.getMonth()).to.equal(r.getMonth())
@@ -1852,7 +1998,7 @@ describe('manipulate', func() {
 
 		describe('second', func() {
 			it('enu', func() { // {{{
-				const d = new Date().startOf(DateField::SECOND)
+				const d = new Date(o).startOf(DateField::SECOND)
 
 				expect(d.getYear()).to.equal(r.getYear())
 				expect(d.getMonth()).to.equal(r.getMonth())
@@ -1864,7 +2010,7 @@ describe('manipulate', func() {
 			}) // }}}
 
 			it('str', func() { // {{{
-				const d = new Date().startOf('second')
+				const d = new Date(o).startOf('second')
 
 				expect(d.getYear()).to.equal(r.getYear())
 				expect(d.getMonth()).to.equal(r.getMonth())
